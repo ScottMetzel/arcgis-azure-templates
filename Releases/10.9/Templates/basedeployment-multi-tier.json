@@ -39,7 +39,7 @@
         "description": "(Optional) Indicates whether Azure Files (SMB protocol) is used for the server config and portal content store"
       }
     },
-    "deployPublicIPWhenUsingPrivateIP":{
+    "deployPublicIPWhenUsingPrivateIP": {
       "type": "bool",
       "defaultValue": true,
       "metadata": {
@@ -70,7 +70,7 @@
     "dnsPrefixForPublicIpAddress": {
       "type": "string",
       "maxLength": 80,
-      "defaultValue":"",
+      "defaultValue": "",
       "metadata": {
         "description": "DNS name for the Public IP address resource asociated with the site deployment. It needs to be unique across the region of deployment"
       }
@@ -882,7 +882,7 @@
         "description": "(Optional) The types of ArcGIS Data Stores that are enabled for this deployment"
       }
     },
-    "isMultiMachineTileCacheDataStore":{
+    "isMultiMachineTileCacheDataStore": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
@@ -1007,6 +1007,72 @@
         "description": "(Optional) deployment Tracking ID based on Orchestrator being Automation or Cloud Builder "
       },
       "defaultValue": "01702208-6a87-494b-9f6c-5e6be4bea47b"
+    },
+    "useAvailabilityZones": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Indicates Availability Zones should be used. Requires deployment to an Azure region which supports Availability Zones (such as West US 2)."
+      }
+    },
+    "RDPVMAvailabilityZone": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "WebAdapterVMAvailabilityZone": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "GISPortalVMAvailabilityZone": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "GISServerVMAvailabilityZone": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "GISDatastoreRelationalVMAvailabilityZone": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "GISDatastoreTileCacheAvailabilityZone": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "GISDatastoreSpatiotemporalVMAvailabilityZone": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "OSImageSKU": {
+      "type": "string",
+      "allowedValues": [
+        "2019-datacenter-gensecond",
+        "2022-datacenter-g2",
+        "2022-datacenter-azure-edition",
+        "2022-datacenter-azure-edition-smalldisk"
+      ],
+      "defaultValue": "2022-datacenter-azure-edition"
     }
   },
   "variables": {
@@ -1022,8 +1088,8 @@
     "publicIPAddressResourceName": "[if(parameters('usesExistingPublicIP'), parameters('existingPublicIPName'), concat(parameters('deploymentPrefix'), 'PublicIP'))]",
     "publicIPAddressRDPResourceName": "[concat(parameters('deploymentPrefix'), 'PublicIP-RDP')]",
     "publicIPAddressResourceGroupName": "[if(parameters('usesExistingPublicIP'), parameters('existingPublicIPResourceGroupName'), resourceGroup().name)]",
-    "unusedPublicIPPWhenUsingPrivateIPDnsPrefix":"[concat('ip',variables('deploymentId'),parameters('serverContext'))]",
-    "unusedPublicIPWhenUsingPrivateIPResourceName":"[concat(variables('unusedPublicIPPWhenUsingPrivateIPDnsPrefix'),'UnusedPublicIP')]",
+    "unusedPublicIPPWhenUsingPrivateIPDnsPrefix": "[concat('ip',variables('deploymentId'),parameters('serverContext'))]",
+    "unusedPublicIPWhenUsingPrivateIPResourceName": "[concat(variables('unusedPublicIPPWhenUsingPrivateIPDnsPrefix'),'UnusedPublicIP')]",
     "vnetID": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks',parameters('existingVirtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
     "appGatewaySubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('appGatewaySubnetName'))]",
@@ -1136,17 +1202,17 @@
     },
     "generateSSLCertsFileName": "GenerateSSLCerts.ps1",
     "frontendIPConfigurationsName": "[concat(parameters('deploymentPrefix'), 'EnterpriseAppGatewayFrontendIP')]",
-    "publicIPFrontEndConfiguration":[
-        {
-          "name": "[variables('frontendIPConfigurationsName')]",
-          "properties": {
-            "PublicIPAddress": {
-              "id": "[resourceId(variables('publicIPAddressResourceGroupName'),'Microsoft.Network/publicIPAddresses',variables('publicIPAddressResourceName'))]"
-            }
+    "publicIPFrontEndConfiguration": [
+      {
+        "name": "[variables('frontendIPConfigurationsName')]",
+        "properties": {
+          "PublicIPAddress": {
+            "id": "[resourceId(variables('publicIPAddressResourceGroupName'),'Microsoft.Network/publicIPAddresses',variables('publicIPAddressResourceName'))]"
           }
         }
+      }
     ],
-    "privateIPFrontEndConfiguration":{
+    "privateIPFrontEndConfiguration": {
       "true": [
         {
           "name": "unusedAppGatewayFrontendPublicIP",
@@ -1233,28 +1299,11 @@
         "mode": "Incremental",
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "parameters": {
+          },
           "contentVersion": "1.0.0.0",
           "resources": [
           ]
-        }
-      }
-    },
-    {
-      "condition": "[equals(string(parameters('enableRDPAccess')),'True')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressRDPResourceName')]",
-      "apiVersion": "[variables('networkApiVersion')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "displayName": "Public IP Address - RDP (Optional)",
-        "arcgis-deployment-id": "[variables('deploymentId')]"
-      },
-      "scale": null,
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic",
-        "idleTimeoutInMinutes": 4,
-        "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsPrefixForPublicIpAddress'),'-rdp')]"
         }
       }
     },
@@ -1277,9 +1326,6 @@
             "name": "jumpbox-ipconfig",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressRDPResourceName'))]"
-              },
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
@@ -1319,7 +1365,7 @@
           "imageReference": {
             "publisher": "MicrosoftWindowsServer",
             "offer": "WindowsServer",
-            "sku": "2019-Datacenter-smalldisk",
+            "sku": "[parameters('OSImageSKU')]",
             "version": "latest"
           },
           "osDisk": {
@@ -1338,7 +1384,8 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('jumpBoxNicName'))]"
             }
           ]
-        }
+        },
+        "zones": "[if(greaterOrEquals(length(parameters('RDPVMAvailabilityZone')),1),createArray(string(parameters('RDPVMAvailabilityZone')[0])),json('null'))]"
       }
     },
     {
@@ -1351,18 +1398,18 @@
         "[variables('jumpBoxName')]"
       ],
       "properties": {
-          "status": "Enabled",
-          "timeZoneId": "[parameters('timeZoneId')]",
-          "taskType": "ComputeVmShutdownTask",
-          "notificationSettings":{
-            "status": "Disabled",
-            "timeInMinutes": 15,
-            "webhookUrl": ""
-          },
-          "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('jumpBoxName'))]",
-          "dailyRecurrence":{
-            "time": "[parameters('autoShutDownTime')]"
-          }
+        "status": "Enabled",
+        "timeZoneId": "[parameters('timeZoneId')]",
+        "taskType": "ComputeVmShutdownTask",
+        "notificationSettings": {
+          "status": "Disabled",
+          "timeInMinutes": 15,
+          "webhookUrl": ""
+        },
+        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('jumpBoxName'))]",
+        "dailyRecurrence": {
+          "time": "[parameters('autoShutDownTime')]"
+        }
       }
     },
     {
@@ -1394,33 +1441,10 @@
       }
     },
     {
-      "condition": "[or(not(parameters('usesExistingPublicIP')),and(equals(string(parameters('usesPrivateIP')), 'True'),equals(string(parameters('deployPublicIPWhenUsingPrivateIP')), 'True')))]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[if(parameters('usesPrivateIP'),variables('unusedPublicIPWhenUsingPrivateIPResourceName'),variables('publicIPAddressResourceName'))]",
-      "apiVersion": "[variables('computeApiVersion')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "displayName": "Application Gateway Public IP Address",
-        "arcgis-deployment-id": "[variables('deploymentId')]"
-      },
-      "sku": {
-        "name": "Standard"
-      },
-      "scale": null,
-      "properties": {
-        "publicIPAllocationMethod": "Static",
-        "idleTimeoutInMinutes": 11,
-        "dnsSettings": {
-          "domainNameLabel": "[if(parameters('usesPrivateIP'),variables('unusedPublicIPPWhenUsingPrivateIPDnsPrefix'),parameters('dnsPrefixForPublicIpAddress'))]"
-        }
-      },
-      "dependsOn": [
-      ]
-    },
-    {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('serverAvailablitySetName')]",
+      "condition": "[less(length(parameters('GISServerVMAvailabilityZone')),1)]",
       "location": "[parameters('location')]",
       "tags": {
         "displayName": "Server Availability Set",
@@ -1478,14 +1502,13 @@
         "arcgis-deployment-id": "[variables('deploymentId')]",
         "displayName": "Server Virtual Machines"
       },
-      "plan": "[if(equals(string(parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['UseManagedDiskImage']),'True'),json('null'),json(concat('{\"publisher\":\"',parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['Publisher'],'\",\"product\":\"',parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['Offer'],'\",\"name\":\"',parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['SKU'],'\"}')))]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('serverVirtualMachineNames')[copyIndex()], '-', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('serverAvailablitySetName'))]"
       ],
       "properties": {
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('serverAvailablitySetName'))]"
+          "id": "[if(not(parameters('useAvailabilityZones')),resourceId('Microsoft.Compute/availabilitySets',variables('serverAvailablitySetName')),json('null'))]"
         },
         "hardwareProfile": {
           "vmSize": "[parameters('serverVirtualMachineSize')]"
@@ -1500,7 +1523,12 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[if(equals(string(parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['UseManagedDiskImage']),'True'),json(concat('{\"id\":\"',resourceid(string(parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['UserImageResourceGroupName']),'Microsoft.Compute/images',string(parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['UserImageName'])),'\"}')),json(concat('{\"publisher\":\"',parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['Publisher'],'\",\"offer\":\"',parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['Offer'],'\",\"sku\":\"',parameters('imageReferences')[variables('serverVirtualMachineImageSpecs')[copyIndex()]]['SKU'],'\",\"version\":\"latest\"}')))]",
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('OSImageSKU')]",
+            "version": "latest"
+          },
           "osDisk": {
             "name": "[concat(variables('serverVirtualMachineNames')[copyIndex()],'-','OSDisk')]",
             "managedDisk": {
@@ -1519,7 +1547,8 @@
             }
           ]
         }
-      }
+      },
+      "zones": "[if(greaterOrEquals(length(parameters('GISServerVMAvailabilityZone')),1),createArray(string(parameters('GISServerVMAvailabilityZone')[0])),json('null'))]"
     },
     {
       "condition": "[equals(string(parameters('enableAutoShutDown')), 'True')]",
@@ -1538,13 +1567,13 @@
         "status": "Enabled",
         "timeZoneId": "[parameters('timeZoneId')]",
         "taskType": "ComputeVmShutdownTask",
-        "notificationSettings":{
+        "notificationSettings": {
           "status": "Disabled",
           "timeInMinutes": 15,
           "webhookUrl": ""
         },
         "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('serverVirtualMachineNames')[copyIndex()])]",
-        "dailyRecurrence":{
+        "dailyRecurrence": {
           "time": "[parameters('autoShutDownTime')]"
         }
       }
@@ -1585,6 +1614,7 @@
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('portalAvailablitySetName')]",
+      "condition": "[less(length(parameters('GISPortalVMAvailabilityZone')),1)]",
       "location": "[parameters('location')]",
       "tags": {
         "displayName": "Portal Availability Set",
@@ -1642,7 +1672,6 @@
         "arcgis-deployment-id": "[variables('deploymentId')]",
         "displayName": "Portal Virtual Machines"
       },
-      "plan": "[if(equals(string(parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['UseManagedDiskImage']),'True'),json('null'),json(concat('{\"publisher\":\"',parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['Publisher'],'\",\"product\":\"',parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['Offer'],'\",\"name\":\"',parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['SKU'],'\"}')))]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('portalVirtualMachineNames')[copyIndex()], '-', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('portalAvailablitySetName'))]"
@@ -1664,7 +1693,12 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[if(equals(string(parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['UseManagedDiskImage']),'True'),json(concat('{\"id\":\"',resourceid(string(parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['UserImageResourceGroupName']),'Microsoft.Compute/images',string(parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['UserImageName'])),'\"}')),json(concat('{\"publisher\":\"',parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['Publisher'],'\",\"offer\":\"',parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['Offer'],'\",\"sku\":\"',parameters('imageReferences')[variables('portalVirtualMachineImageSpecs')[copyIndex()]]['SKU'],'\",\"version\":\"latest\"}')))]",
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('OSImageSKU')]",
+            "version": "latest"
+          },
           "osDisk": {
             "name": "[concat(variables('portalVirtualMachineNames')[copyIndex()],'-','OSDisk')]",
             "managedDisk": {
@@ -1683,7 +1717,8 @@
             }
           ]
         }
-      }
+      },
+      "zones": "[if(greaterOrEquals(length(parameters('GISPortalVMAvailabilityZone')),1),createArray(string(parameters('GISPortalVMAvailabilityZone')[0])),json('null'))]"
     },
     {
       "condition": "[equals(string(parameters('enableAutoShutDown')), 'True')]",
@@ -1702,13 +1737,13 @@
         "status": "Enabled",
         "timeZoneId": "[parameters('timeZoneId')]",
         "taskType": "ComputeVmShutdownTask",
-        "notificationSettings":{
+        "notificationSettings": {
           "status": "Disabled",
           "timeInMinutes": 15,
           "webhookUrl": ""
         },
         "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('portalVirtualMachineNames')[copyIndex()])]",
-        "dailyRecurrence":{
+        "dailyRecurrence": {
           "time": "[parameters('autoShutDownTime')]"
         }
       }
@@ -1749,6 +1784,7 @@
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('dataStoreAvailablitySetName')]",
+      "condition": "[less(length(parameters('GISDatastoreRelationalVMAvailabilityZone')),1)]",
       "location": "[parameters('location')]",
       "tags": {
         "displayName": "Data Store Availability Set",
@@ -1806,7 +1842,6 @@
         "arcgis-deployment-id": "[variables('deploymentId')]",
         "displayName": "Data Store Virtual Machines"
       },
-      "plan": "[if(equals(string(parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['UseManagedDiskImage']),'True'),json('null'),json(concat('{\"publisher\":\"',parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['Publisher'],'\",\"product\":\"',parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['Offer'],'\",\"name\":\"',parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['SKU'],'\"}')))]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('dataStoreVirtualMachineNames')[copyIndex()], '-', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('dataStoreAvailablitySetName'))]"
@@ -1828,7 +1863,12 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[if(equals(string(parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['UseManagedDiskImage']),'True'),json(concat('{\"id\":\"',resourceid(string(parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['UserImageResourceGroupName']),'Microsoft.Compute/images',string(parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['UserImageName'])),'\"}')),json(concat('{\"publisher\":\"',parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['Publisher'],'\",\"offer\":\"',parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['Offer'],'\",\"sku\":\"',parameters('imageReferences')[variables('dataStoreVirtualMachineImageSpecs')[copyIndex()]]['SKU'],'\",\"version\":\"latest\"}')))]",
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('OSImageSKU')]",
+            "version": "latest"
+          },
           "osDisk": {
             "name": "[concat(variables('dataStoreVirtualMachineNames')[copyIndex()],'-','OSDisk')]",
             "managedDisk": {
@@ -1847,7 +1887,8 @@
             }
           ]
         }
-      }
+      },
+      "zones": "[if(greaterOrEquals(length(parameters('GISDatastoreRelationalVMAvailabilityZone')),1),createArray(string(parameters('GISServerVMAvailabilityZone')[0])),json('null'))]"
     },
     {
       "condition": "[equals(string(parameters('enableAutoShutDown')), 'True')]",
@@ -1866,13 +1907,13 @@
         "status": "Enabled",
         "timeZoneId": "[parameters('timeZoneId')]",
         "taskType": "ComputeVmShutdownTask",
-        "notificationSettings":{
+        "notificationSettings": {
           "status": "Disabled",
           "timeInMinutes": 15,
           "webhookUrl": ""
         },
         "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('dataStoreVirtualMachineNames')[copyIndex()])]",
-        "dailyRecurrence":{
+        "dailyRecurrence": {
           "time": "[parameters('autoShutDownTime')]"
         }
       }
@@ -1910,85 +1951,6 @@
       }
     },
     {
-      "apiVersion": "[variables('networkApiVersion')]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('fileShareVirtualMachineName'), '-', variables('nicName'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "displayName": "File Share Network Interface",
-        "arcgis-deployment-id": "[variables('deploymentId')]"
-      },
-      "dependsOn": [
-      ],
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "condition": "[not(empty(parameters('adminPassword')))]",
-      "apiVersion": "[variables('computeApiVersion')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('fileShareVirtualMachineName')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "arcgis-vm-roles": "FileShare",
-        "displayName": "File Share",
-        "arcgis-deployment-id": "[variables('deploymentId')]"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', parameters('fileShareVirtualMachineName'), '-', variables('nicName'))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('fileShareVirtualMachineSize')]"
-        },
-        "osProfile": {
-          "computername": "[parameters('fileShareVirtualMachineName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]",
-          "windowsConfiguration": {
-            "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]",
-            "timeZone": "[parameters('timeZoneId')]"
-          }
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2019-Datacenter-smalldisk",
-            "version": "latest"
-          },
-          "osDisk": {
-            "name": "[concat(parameters('fileShareVirtualMachineName'),'-','OsDisk')]",
-            "managedDisk": {
-              "storageAccountType": "[parameters('fileShareVirtualMachineOSDiskType')]"
-            },
-            "diskSizeGB": "[parameters('fileShareVirtualMachineOSDiskSize')]",
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
-          },
-          "dataDisks": "[if(equals(string(parameters('enableFileShareVirtualMachineDataDisk')),'True'), json(concat('[{\"name\":\"', concat(parameters('fileShareVirtualMachineName'),'-','DataDisk'), '\", \"lun\": 0, \"createOption\": \"empty\", \"diskSizeGB\": \"', parameters('fileShareVirtualMachineDataDiskSize'), '\", \"managedDisk\": { \"storageAccountType\":\"', parameters('fileShareVirtualMachineDataDiskType') ,'\"} }]')), json('null'))]"
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces/', concat(parameters('fileShareVirtualMachineName'), '-',variables('nicName')))]"
-            }
-          ]
-        }
-      }
-    },
-    {
       "condition": "[equals(string(parameters('enableAutoShutDown')), 'True')]",
       "apiVersion": "2018-09-15",
       "type": "Microsoft.DevTestLab/schedules",
@@ -2001,42 +1963,14 @@
         "status": "Enabled",
         "timeZoneId": "[parameters('timeZoneId')]",
         "taskType": "ComputeVmShutdownTask",
-        "notificationSettings":{
+        "notificationSettings": {
           "status": "Disabled",
           "timeInMinutes": 15,
           "webhookUrl": ""
         },
         "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', parameters('fileShareVirtualMachineName'))]",
-        "dailyRecurrence":{
+        "dailyRecurrence": {
           "time": "[parameters('autoShutDownTime')]"
-        }
-      }
-    },
-    {
-      "condition": "[equals(string(parameters('joinWindowsDomain')), 'True')]",
-      "apiVersion": "[variables('computeApiVersion')]",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('fileShareVirtualMachineName'),'/JoinDomain')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[parameters('fileShareVirtualMachineName')]"
-      ],
-      "tags": {
-        "displayName": "(Optional) File Share Domain Join"
-      },
-      "properties": {
-        "publisher": "Microsoft.Compute",
-        "type": "JsonADDomainExtension",
-        "typeHandlerVersion": "1.3",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "Name": "[parameters('windowsDomainName')]",
-          "User": "[parameters('windowsDomainAdministratorUserName')]",
-          "Restart": "true",
-          "Options": 3
-        },
-        "protectedSettings": {
-          "Password": "[parameters('windowsDomainAdministratorPassword')]"
         }
       }
     },
@@ -2099,6 +2033,35 @@
       }
     },
     {
+      "condition": "[or(not(parameters('usesExistingPublicIP')),and(equals(string(parameters('usesPrivateIP')), 'True'),equals(string(parameters('deployPublicIPWhenUsingPrivateIP')), 'True')))]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[if(parameters('usesPrivateIP'),variables('unusedPublicIPWhenUsingPrivateIPResourceName'),variables('publicIPAddressResourceName'))]",
+      "apiVersion": "[variables('computeApiVersion')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "displayName": "Application Gateway Public IP Address",
+        "arcgis-deployment-id": "[variables('deploymentId')]"
+      },
+      "sku": {
+        "name": "Standard"
+      },
+      "scale": null,
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 11,
+        "dnsSettings": {
+          "domainNameLabel": "[if(parameters('usesPrivateIP'),variables('unusedPublicIPPWhenUsingPrivateIPDnsPrefix'),parameters('dnsPrefixForPublicIpAddress'))]"
+        }
+      },
+      "dependsOn": [
+      ],
+      "zones": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
       "name": "[concat('appGatewayNestedDeployment-',deployment().name)]",
@@ -2122,84 +2085,405 @@
               "apiVersion": "2019-04-01",
               "name": "[parameters('appGatewayName')]",
               "location": "[parameters('location')]",
-              "tags": APPGATEWAYTAGS,
-              "properties": APPGATEWAYPROPERTIESOBJECT
+              "properties": {
+                "sku": {
+                  "name": "Standard_v2",
+                  "tier": "Standard_v2",
+                  "capacity": 2
+                },
+                "gatewayIPConfigurations": [
+                  {
+                    "name": "appGatewayIpConfig",
+                    "properties": {
+                      "subnet": {
+                        "id": "[variables('appGatewaySubnetRef')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendIPConfigurations": "[if(parameters('usesPrivateIP'),variables('privateIPFrontEndConfiguration')[string(parameters('deployPublicIPWhenUsingPrivateIP'))],variables('publicIPFrontEndConfiguration'))]",
+                "sslCertificates": [
+                  {
+                    "name": "frontendCert",
+                    "properties": {
+                      "data": "[parameters('sslCertificateData')]",
+                      "password": "[parameters('sslCertificatePassword')]"
+                    }
+                  }
+                ],
+                "trustedRootCertificates": [
+                  {
+                    "name": "serverBackendSSLCert",
+                    "properties": {
+                      "data": "[split(reference(concat('generateSSLCertificatesCustomExtension-',deployment().name)).outputs.instanceView.value.substatuses[0].message, '###DATA###')[0]]"
+                    }
+                  },
+                  {
+                    "name": "portalBackendSSLCert",
+                    "properties": {
+                      "data": "[split(reference(concat('generateSSLCertificatesCustomExtension-',deployment().name)).outputs.instanceView.value.substatuses[0].message, '###DATA###')[1]]"
+                    }
+                  }
+                ],
+                "frontendPorts": [
+                  {
+                    "name": "[variables('frontendport443Name')]",
+                    "properties": {
+                      "port": 443
+                    }
+                  },
+                  {
+                    "name": "[variables('frontendport80Name')]",
+                    "properties": {
+                      "port": 80
+                    }
+                  }
+                ],
+                "backendAddressPools": [
+                  {
+                    "name": "[variables('serverBackendPoolName')]",
+                    "properties": {
+                      "copy": [
+                        {
+                          "name": "backendAddresses",
+                          "count": "[variables('numberOfServerVirtualMachines')]",
+                          "input": {
+                            "fqdn": "[concat( variables('serverVirtualMachineNames')[copyIndex('backendAddresses')], '.', if(equals(string(parameters('joinWindowsDomain')), 'True'),parameters('windowsDomainName'), reference(concat(variables('serverVirtualMachineNames')[copyIndex('backendAddresses')],'-',variables('nicName'))).dnsSettings.internalDomainNameSuffix))]"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "[variables('portalBackendPoolName')]",
+                    "properties": {
+                      "copy": [
+                        {
+                          "name": "backendAddresses",
+                          "count": "[variables('numberOfPortalVirtualMachines')]",
+                          "input": {
+                            "fqdn": "[concat( variables('portalVirtualMachineNames')[copyIndex('backendAddresses')], '.', if(equals(string(parameters('joinWindowsDomain')), 'True'),parameters('windowsDomainName'), reference(concat(variables('portalVirtualMachineNames')[copyIndex('backendAddresses')],'-',variables('nicName'))).dnsSettings.internalDomainNameSuffix))]"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "backendHttpSettingsCollection": [
+                  {
+                    "name": "[variables('portalBackendHttpsSettingName')]",
+                    "properties": {
+                      "port": 7443,
+                      "protocol": "Https",
+                      "cookieBasedAffinity": "Disabled",
+                      "connectionDraining": {
+                        "enabled": true,
+                        "drainTimeoutInSec": 60
+                      },
+                      "pickHostNameFromBackendAddress": true,
+                      "path": "/arcgis/",
+                      "requestTimeout": 180,
+                      "probe": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/probes/', variables('portalBackendProbeName'))]"
+                      },
+                      "trustedRootCertificates": [
+                        {
+                          "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/trustedRootCertificates/portalBackendSSLCert')]"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "[variables('serverBackendHttpsSettingName')]",
+                    "properties": {
+                      "port": 6443,
+                      "protocol": "Https",
+                      "cookieBasedAffinity": "Disabled",
+                      "connectionDraining": {
+                        "enabled": true,
+                        "drainTimeoutInSec": 60
+                      },
+                      "pickHostNameFromBackendAddress": true,
+                      "path": "/arcgis/",
+                      "requestTimeout": 180,
+                      "probe": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/probes/', variables('serverBackendProbeName'))]"
+                      },
+                      "trustedRootCertificates": [
+                        {
+                          "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/trustedRootCertificates/serverBackendSSLCert')]"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "probes": [
+                  {
+                    "name": "[variables('serverBackendProbeName')]",
+                    "properties": {
+                      "protocol": "Https",
+                      "path": "/arcgis/rest/info/healthcheck",
+                      "interval": 30,
+                      "timeout": 30,
+                      "unhealthyThreshold": 3,
+                      "pickHostNameFromBackendHttpSettings": true,
+                      "minServers": 0,
+                      "match": {
+                        "statusCodes": [
+                          "200"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "name": "[variables('portalBackendProbeName')]",
+                    "properties": {
+                      "protocol": "Https",
+                      "path": "/arcgis/portaladmin/healthCheck",
+                      "interval": 30,
+                      "timeout": 30,
+                      "unhealthyThreshold": 3,
+                      "pickHostNameFromBackendHttpSettings": true,
+                      "minServers": 0,
+                      "match": {
+                        "statusCodes": [
+                          "200"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "httpListeners": [
+                  {
+                    "name": "[variables('httpDeploymentListnerName')]",
+                    "properties": {
+                      "frontendIPConfiguration": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/frontendIPConfigurations/',variables('frontendIPConfigurationsName'))]"
+                      },
+                      "frontendPort": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/frontendPorts/',variables('frontendport80Name'))]"
+                      },
+                      "protocol": "Http",
+                      "hostName": "[parameters('externalDnsHostName')]",
+                      "requireServerNameIndication": false
+                    }
+                  },
+                  {
+                    "name": "[variables('httpsDeploymentListnerName')]",
+                    "properties": {
+                      "frontendIPConfiguration": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/frontendIPConfigurations/',variables('frontendIPConfigurationsName'))]"
+                      },
+                      "frontendPort": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/frontendPorts/',variables('frontendport443Name'))]"
+                      },
+                      "protocol": "Https",
+                      "sslCertificate": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/sslCertificates/frontendCert')]"
+                      },
+                      "hostName": "[parameters('externalDnsHostName')]",
+                      "requireServerNameIndication": false
+                    }
+                  }
+                ],
+                "urlPathMaps": [
+                  {
+                    "name": "[variables('urlPathMapsName')]",
+                    "properties": {
+                      "defaultBackendAddressPool": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendAddressPools/',variables('serverBackendPoolName'))]"
+                      },
+                      "defaultBackendHttpSettings": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendHttpSettingsCollection/',variables('serverBackendHttpsSettingName'))]"
+                      },
+                      "pathRules": [
+                        {
+                          "name": "serverPathRule",
+                          "properties": {
+                            "paths": [
+                              "[concat('/', parameters('serverContext'), '/*')]"
+                            ],
+                            "backendAddressPool": {
+                              "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendAddressPools/',variables('serverBackendPoolName'))]"
+                            },
+                            "backendHttpSettings": {
+                              "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendHttpSettingsCollection/', variables('serverBackendHttpsSettingName'))]"
+                            },
+                            "rewriteRuleSet": {
+                              "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/rewriteRuleSets/',variables('serverRewriteRuleSetName'))]"
+                            }
+                          }
+                        },
+                        {
+                          "name": "portalPathRule",
+                          "properties": {
+                            "paths": [
+                              "[concat('/', parameters('portalContext'), '/*')]",
+                              "[concat('/', parameters('portalContext'))]"
+                            ],
+                            "backendAddressPool": {
+                              "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendAddressPools/',variables('portalBackendPoolName'))]"
+                            },
+                            "backendHttpSettings": {
+                              "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendHttpSettingsCollection/', variables('portalBackendHttpsSettingName'))]"
+                            },
+                            "rewriteRuleSet": {
+                              "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/rewriteRuleSets/',variables('portalRewriteRuleSetName'))]"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "redirectConfigurations": [
+                  {
+                    "name": "[variables('redirectConfigurationName')]",
+                    "properties": {
+                      "redirectType": "Permanent",
+                      "targetListener": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/httpListeners/',variables('httpsDeploymentListnerName'))]"
+                      },
+                      "includePath": true,
+                      "includeQueryString": true,
+                      "requestRoutingRules": [
+                        {
+                          "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/requestRoutingRules/',variables('httpToHttpsRequestRoutingRule'))]"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "requestRoutingRules": [
+                  {
+                    "Name": "[variables('requestRoutingRule')]",
+                    "properties": {
+                      "RuleType": "PathBasedRouting",
+                      "httpListener": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/httpListeners/',variables('httpsDeploymentListnerName'))]"
+                      },
+                      "urlPathMap": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/urlPathMaps/',variables('urlPathMapsName'))]"
+                      }
+                    }
+                  },
+                  {
+                    "name": "[variables('httpToHttpsRequestRoutingRule')]",
+                    "properties": {
+                      "ruleType": "Basic",
+                      "httpListener": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/httpListeners/',variables('httpDeploymentListnerName'))]"
+                      },
+                      "redirectConfiguration": {
+                        "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/redirectConfigurations/',variables('redirectConfigurationName'))]"
+                      }
+                    }
+                  }
+                ],
+                "rewriteRuleSets": [
+                  {
+                    "name": "[variables('portalRewriteRuleSetName')]",
+                    "properties": {
+                      "rewriteRules": [
+                        {
+                          "ruleSequence": 50,
+                          "conditions": [],
+                          "name": "XForwardedHostRewrite",
+                          "actionSet": {
+                            "requestHeaderConfigurations": [
+                              {
+                                "headerName": "X-Forwarded-Host",
+                                "headerValue": "{http_req_host}"
+                              }
+                            ],
+                            "responseHeaderConfigurations": []
+                          }
+                        },
+                        {
+                          "ruleSequence": 100,
+                          "conditions": [
+                            {
+                              "variable": "http_resp_Location",
+                              "pattern": "[concat('(https?):\\/\\/[^\\/]+:7443\\/(?:arcgis|',parameters('portalContext'),')(.*)$')]",
+                              "ignoreCase": true,
+                              "negate": false
+                            }
+                          ],
+                          "name": "PortalRewrite",
+                          "actionSet": {
+                            "requestHeaderConfigurations": [],
+                            "responseHeaderConfigurations": [
+                              {
+                                "headerName": "RewriteLocationValue",
+                                "headerValue": "[concat('{http_resp_Location_1}://{http_req_host}/',parameters('portalContext'),'{http_resp_Location_2}')]"
+                              },
+                              {
+                                "headerName": "Location",
+                                "headerValue": "[concat('{http_resp_Location_1}://{http_req_host}/',parameters('portalContext'),'{http_resp_Location_2}')]"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "[variables('serverRewriteRuleSetName')]",
+                    "properties": {
+                      "rewriteRules": [
+                        {
+                          "ruleSequence": 50,
+                          "conditions": [],
+                          "name": "XForwardedHostRewrite",
+                          "actionSet": {
+                            "requestHeaderConfigurations": [
+                              {
+                                "headerName": "X-Forwarded-Host",
+                                "headerValue": "{http_req_host}"
+                              }
+                            ],
+                            "responseHeaderConfigurations": []
+                          }
+                        },
+                        {
+                          "ruleSequence": 100,
+                          "conditions": [
+                            {
+                              "variable": "http_resp_Location",
+                              "pattern": "[concat('(https?):\\/\\/[^\\/]+:6443\\/(?:arcgis|',parameters('serverContext'),')(.*)$')]",
+                              "ignoreCase": true,
+                              "negate": false
+                            }
+                          ],
+                          "name": "ServerRewrite",
+                          "actionSet": {
+                            "requestHeaderConfigurations": [],
+                            "responseHeaderConfigurations": [
+                              {
+                                "headerName": "RewriteLocationValue",
+                                "headerValue": "[concat('{http_resp_Location_1}://{http_req_host}/',parameters('serverContext'),'{http_resp_Location_2}')]"
+                              },
+                              {
+                                "headerName": "Location",
+                                "headerValue": "[concat('{http_resp_Location_1}://{http_req_host}/',parameters('serverContext'),'{http_resp_Location_2}')]"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "zones": [
+                "1",
+                "2",
+                "3"
+              ]
             }
           ]
         },
         "parameters": {
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "condition": "[and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName'))))]",
-      "name": "[concat(parameters('fileShareVirtualMachineName'),'/LogAnalytics')]",
-      "apiVersion": "2015-05-01-preview",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('fileShareVirtualMachineName'))]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-        "type": "MicrosoftMonitoringAgent",
-        "typeHandlerVersion": "1.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "workspaceId": "[if(not(empty(variables('omsWorkspaceResourceId'))),reference(variables('omsWorkspaceResourceId'),'2015-11-01-preview').customerId ,json('null'))]"
-        },
-        "protectedSettings": {
-          "workspaceKey": "[if(not(empty(variables('omsWorkspaceResourceId'))),listKeys(variables('omsWorkspaceResourceId'),'2015-11-01-preview').primarySharedKey ,json('null'))]"
-        }
-      }
-    },
-    {
-      "condition": "[not(empty(parameters('adminPassword')))]",
-      "name": "[concat(parameters('fileShareVirtualMachineName'),'/DSCConfiguration')]",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "location": "[parameters('location')]",
-      "tags": {
-        "displayName": "File Share DSC Script"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', 'generateSSLCertificatesCustomExtension-', deployment().name)]"
-      ],
-      "apiVersion": "[variables('computeApiVersion')]",
-      "properties": {
-        "publisher": "Microsoft.Powershell",
-        "type": "DSC",
-        "typeHandlerVersion": "2.77",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "wmfVersion": "latest",
-          "configuration": {
-            "url": "[concat(parameters('_artifactsLocation'), '/', variables('dscExtensionArchiveFileName'))]",
-            "function": "[variables('fileShareDscScriptFunction')]",
-            "script": "[concat(variables('fileShareDscScriptFunction'), '.ps1')]"
-          },
-          "configurationArguments": {
-            "ServiceCredentialIsDomainAccount": "[parameters('arcgisServiceAccountIsDomainAccount')]",
-            "OSDiskSize": "[parameters('fileShareVirtualMachineOSDiskSize')]",
-            "EnableDataDisk": "[string(parameters('enableFileShareVirtualMachineDataDisk'))]",
-            "IsBaseDeployment": "True",
-            "ExternalDNSHostName": "[parameters('externalDnsHostName')]",
-            "PortalContext": "[parameters('portalContext')]",
-            "FileShareName": "[parameters('fileShareName')]",
-            "DebugMode": "[string(parameters('debugMode'))]"
-          }
-        },
-        "protectedSettings": {
-          "configurationUrlSasToken": "[parameters('_artifactsLocationSasToken')]",
-          "configurationArguments": {
-            "ServiceCredential": {
-              "userName": "[if(empty(parameters('arcgisServiceAccountUserName')),'PlaceHolder', parameters('arcgisServiceAccountUserName'))]",
-              "password": "[if(empty(parameters('arcgisServiceAccountPassword')),'PlaceHolder', parameters('arcgisServiceAccountPassword'))]"
-            },
-            "MachineAdministratorCredential": {
-              "userName": "[if(empty(parameters('adminUsername')),'PlaceHolder', parameters('adminUsername'))]",
-              "password": "[if(empty(parameters('adminPassword')),'PlaceHolder', parameters('adminPassword'))]"
-            }
-          }
         }
       }
     },
@@ -2484,7 +2768,7 @@
       }
     },
     {
-      "condition": "[equals(string(variables('enableTileCacheDataStore')),'True')]",
+      "condition": "[and(equals(string(variables('enableTileCacheDataStore')),'True'),less(length(parameters('GISDatastoreTileCacheAvailabilityZone')),1))]",
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('tileCacheDataStoreAvailablitySetName')]",
@@ -2546,7 +2830,6 @@
         "arcgis-deployment-id": "[variables('deploymentId')]",
         "displayName": "(Optional) Tile Cache Data Store Virtual Machines"
       },
-      "plan": "[if(equals(string(parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['UseManagedDiskImage']),'True'),json('null'),json(concat('{\"publisher\":\"',parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['Publisher'],'\",\"product\":\"',parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['Offer'],'\",\"name\":\"',parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['SKU'],'\"}')))]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('tileCacheDataStoreVirtualMachineNameOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()], '-', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('tileCacheDataStoreAvailablitySetName'))]"
@@ -2568,7 +2851,12 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[if(equals(string(parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['UseManagedDiskImage']),'True'),json(concat('{\"id\":\"',resourceid(string(parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['UserImageResourceGroupName']),'Microsoft.Compute/images',string(parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['UserImageName'])),'\"}')),json(concat('{\"publisher\":\"',parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['Publisher'],'\",\"offer\":\"',parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['Offer'],'\",\"sku\":\"',parameters('imageReferences')[string(variables('tileCacheDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()])]['SKU'],'\",\"version\":\"latest\"}')))]",
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('OSImageSKU')]",
+            "version": "latest"
+          },
           "osDisk": {
             "name": "[concat(variables('tileCacheDataStoreVirtualMachineNames')[copyIndex()],'-','OSDisk')]",
             "managedDisk": {
@@ -2587,7 +2875,8 @@
             }
           ]
         }
-      }
+      },
+      "zones": "[if(greaterOrEquals(length(parameters('GISDatastoreTileCacheAvailabilityZone')),1),createArray(string(parameters('GISDatastoreTileCacheAvailabilityZone')[0])),json('null'))]"
     },
     {
       "condition": "[and(equals(string(variables('enableTileCacheDataStore')),'True'), equals(string(parameters('enableAutoShutDown')), 'True'))]",
@@ -2606,13 +2895,13 @@
         "status": "Enabled",
         "timeZoneId": "[parameters('timeZoneId')]",
         "taskType": "ComputeVmShutdownTask",
-        "notificationSettings":{
+        "notificationSettings": {
           "status": "Disabled",
           "timeInMinutes": 15,
           "webhookUrl": ""
         },
         "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('tileCacheDataStoreVirtualMachineNames')[copyIndex()])]",
-        "dailyRecurrence":{
+        "dailyRecurrence": {
           "time": "[parameters('autoShutDownTime')]"
         }
       }
@@ -2712,7 +3001,7 @@
             "IsTileCacheDataStoreClustered": "[parameters('isTileCacheDataStoreClustered')]",
             "ServiceCredentialIsDomainAccount": "[parameters('arcgisServiceAccountIsDomainAccount')]",
             "TileCacheDataStoreMachineNames": "[parameters('tileCacheDataStoreVirtualMachineNames')]",
-            "IsMultiMachineTileCache":"[parameters('isMultiMachineTileCacheDataStore')]",
+            "IsMultiMachineTileCache": "[parameters('isMultiMachineTileCacheDataStore')]",
             "FileShareMachineName": "[parameters('fileShareVirtualMachineName')]",
             "FileShareName": "[parameters('fileShareName')]",
             "ServerMachineNames": "[parameters('serverVirtualMachineNames')]",
@@ -2737,7 +3026,7 @@
       }
     },
     {
-      "condition": "[equals(string(variables('enableSpatiotemporalBigDataStore')),'True')]",
+      "condition": "[and(equals(string(variables('enableSpatiotemporalBigDataStore')),'True'),less(length(parameters('GISDatastoreSpatiotemporalVMAvailabilityZone')),1))]",
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('spatiotemporalBigDataStoreAvailablitySetName')]",
@@ -2799,7 +3088,6 @@
         "arcgis-deployment-id": "[variables('deploymentId')]",
         "displayName": "(Optional) Big Data Store Virtual Machines"
       },
-      "plan": "[if(equals(string(parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['UseManagedDiskImage']),'True'),json('null'),json(concat('{\"publisher\":\"',parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['Publisher'],'\",\"product\":\"',parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['Offer'],'\",\"name\":\"',parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['SKU'],'\"}')))]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('spatiotemporalBigDataStoreVirtualMachineNameOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()], '-', variables('nicName'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('spatiotemporalBigDataStoreAvailablitySetName'))]"
@@ -2821,7 +3109,12 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[if(equals(string(parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['UseManagedDiskImage']),'True'),json(concat('{\"id\":\"',resourceid(string(parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['UserImageResourceGroupName']),'Microsoft.Compute/images',string(parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['UserImageName'])),'\"}')),json(concat('{\"publisher\":\"',parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['Publisher'],'\",\"offer\":\"',parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['Offer'],'\",\"sku\":\"',parameters('imageReferences')[string(variables('spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()])]['SKU'],'\",\"version\":\"latest\"}')))]",
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('OSImageSKU')]",
+            "version": "latest"
+          },
           "osDisk": {
             "name": "[concat(variables('spatiotemporalBigDataStoreVirtualMachineNames')[copyIndex()],'-','OSDisk')]",
             "managedDisk": {
@@ -2840,7 +3133,8 @@
             }
           ]
         }
-      }
+      },
+      "zones": "[if(greaterOrEquals(length(parameters('GISDatastoreSpatiotemporalVMAvailabilityZone')),1),createArray(string(parameters('GISDatastoreSpatiotemporalVMAvailabilityZone')[0])),json('null'))]"
     },
     {
       "condition": "[and(equals(string(variables('enableSpatiotemporalBigDataStore')),'True'), equals(string(parameters('enableAutoShutDown')), 'True'))]",
@@ -2859,13 +3153,13 @@
         "status": "[if(parameters('enableAutoShutDown'),'Enabled','Disabled')]",
         "timeZoneId": "[parameters('timeZoneId')]",
         "taskType": "ComputeVmShutdownTask",
-        "notificationSettings":{
+        "notificationSettings": {
           "status": "Disabled",
           "timeInMinutes": 15,
           "webhookUrl": ""
         },
         "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('spatiotemporalBigDataStoreVirtualMachineNames')[copyIndex()])]",
-        "dailyRecurrence":{
+        "dailyRecurrence": {
           "time": "[parameters('autoShutDownTime')]"
         }
       }
