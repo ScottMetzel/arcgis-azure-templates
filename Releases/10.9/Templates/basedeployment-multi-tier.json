@@ -194,7 +194,7 @@
     },
     "fileShareVirtualMachineOSDiskSize": {
       "type": "int",
-      "defaultValue": 64,
+      "defaultValue": 128,
       "allowedValues": [
         64,
         128,
@@ -1153,6 +1153,102 @@
       "metadata": {
         "description": "A base64 string representing the trusted root certificate to add to the Application Gateway. Used for backend communications."
       }
+    },
+    "JumpBoxVirtualMachineOSDiskSize": {
+      "type": "int",
+      "defaultValue": 128,
+      "allowedValues": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Jump Box tier of Virtual Machines"
+      }
+    },
+    "JumpBoxVirtualMachineOSDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Jump Box of Virtual Machines"
+      }
+    },
+    "WebAdaptorVirtualMachineOSDiskSize": {
+      "type": "int",
+      "defaultValue": 128,
+      "allowedValues": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Web Adaptor tier of Virtual Machines"
+      }
+    },
+    "WebAdaptorVirtualMachineOSDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Web Adaptor of Virtual Machines"
+      }
+    },
+    "WebAdaptorVirtualMachineDataDiskSize": {
+      "type": "int",
+      "defaultValue": 128,
+      "allowedValues": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Web Adaptor tier of Virtual Machines"
+      }
+    },
+    "WebAdaptorVirtualMachineDataDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Web Adaptor of Virtual Machines"
+      }
     }
   },
   "variables": {
@@ -1488,9 +1584,9 @@
           "osDisk": {
             "name": "[concat(variables('jumpBoxName'),'-','OsDisk')]",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS"
+              "storageAccountType": "[parameters('JumpBoxVirtualMachineOSDiskType')]"
             },
-            "diskSizeGB": 128,
+            "diskSizeGB": "[parameters('JumpBoxVirtualMachineOSDiskSize')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
@@ -1589,18 +1685,21 @@
           "osDisk": {
             "name": "[concat(variables('webAdaptorBoxName'),'-','OsDisk')]",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS"
+              "storageAccountType": "[parameters('WebAdaptorVirtualMachineOSDiskType')]"
             },
-            "diskSizeGB": 128,
+            "diskSizeGB": "[parameters('WebAdaptorVirtualMachineOSDiskSize')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "diskSizeGB": 64,
+              "diskSizeGB": "[parameters('WebAdaptorVirtualMachineDataDiskSize')]",
               "lun": 0,
               "createOption": "Empty",
-              "name": "[concat(variables('webAdaptorBoxName'),'-','DataDisk-01')]"
+              "name": "[concat(variables('webAdaptorBoxName'),'-','DataDisk-01')]",
+              "managdDisk": {
+                "storageAccountType": "[parameters('WebAdaptorVirtualMachineDataDiskType')]"
+              }
             }
           ]
         },
@@ -1758,16 +1857,19 @@
             "managedDisk": {
               "storageAccountType": "[parameters('serverVirtualMachineOSDiskType')]"
             },
-            "diskSizeGB": 128,
+            "diskSizeGB": "[parameters('serverVirtualMachineOSDiskSize')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "diskSizeGB": 128,
+              "diskSizeGB": "[parameters('serverVirtualMachineDataDiskSize')]",
               "lun": 0,
               "createOption": "Empty",
-              "name": "[concat(variables('serverVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]"
+              "name": "[concat(variables('serverVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
+              "managdDisk": {
+                "storageAccountType": "[parameters('serverVirtualMachineDataDiskType')]"
+              }
             }
           ]
         },
@@ -1933,16 +2035,19 @@
             "managedDisk": {
               "storageAccountType": "[parameters('portalVirtualMachineOSDiskType')]"
             },
-            "diskSizeGB": 128,
+            "diskSizeGB": "[parameters('portalVirtualMachineOSDiskSize')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "diskSizeGB": 128,
+              "diskSizeGB": "[parameters('portalVirtualMachineDataDiskSize')]",
               "lun": 0,
               "createOption": "Empty",
-              "name": "[concat(variables('portalVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]"
+              "name": "[concat(variables('portalVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
+              "managdDisk": {
+                "storageAccountType": "[parameters('portalVirtualMachineDataDiskType')]"
+              }
             }
           ]
         },
@@ -2108,16 +2213,19 @@
             "managedDisk": {
               "storageAccountType": "[parameters('dataStoreVirtualMachineOSDiskType')]"
             },
-            "diskSizeGB": 128,
+            "diskSizeGB": "[parameters('dataStoreVirtualMachineOSDiskSize')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "diskSizeGB": 128,
+              "diskSizeGB": "[parameters('dataStoreVirtualMachineDataDiskSize')]",
               "lun": 0,
               "createOption": "Empty",
-              "name": "[concat(variables('dataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]"
+              "name": "[concat(variables('dataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
+              "managdDisk": {
+                "storageAccountType": "[parameters('dataStoreVirtualMachineDataDiskType')]"
+              }
             }
           ]
         },
@@ -2936,7 +3044,7 @@
         "enabledForDeployment": true,
         "enabledForDiskEncryption": true,
         "enabledForTemplateDeployment": true,
-        "enableRbacAuthorization": true,
+        "enableRbacAuthorization": false,
         "enableSoftDelete": false,
         "publicNetworkAccess": "disabled",
         "sku": {
@@ -3263,16 +3371,19 @@
             "managedDisk": {
               "storageAccountType": "[parameters('tileCacheDataStoreVirtualMachineOSDiskType')]"
             },
-            "diskSizeGB": 128,
+            "diskSizeGB": "[parameters('tileCacheDataStoreVirtualMachineOSDiskSize')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "diskSizeGB": 128,
+              "diskSizeGB": "[parameters('tileCacheDataStoreVirtualMachineDataDiskSize')]",
               "lun": 0,
               "createOption": "Empty",
-              "name": "[concat(variables('tileCacheDataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]"
+              "name": "[concat(variables('tileCacheDataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
+              "managdDisk": {
+                "storageAccountType": "[parameters('tileCacheDataStoreVirtualMachineDataDiskType')]"
+              }
             }
           ]
         },
@@ -3465,16 +3576,19 @@
             "managedDisk": {
               "storageAccountType": "[parameters('spatiotemporalBigDataStoreVirtualMachineOSDiskType')]"
             },
-            "diskSizeGB": 128,
+            "diskSizeGB": "[parameters('spatiotemporalBigDataStoreVirtualMachineOSDiskSize')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "diskSizeGB": 128,
+              "diskSizeGB": "[parameters('spatiotemporalBigDataStoreVirtualMachineDataDiskSize')]",
               "lun": 0,
               "createOption": "Empty",
-              "name": "[concat(variables('spatiotemporalBigDataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]"
+              "name": "[concat(variables('spatiotemporalBigDataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
+              "managdDisk": {
+                "storageAccountType": "[parameters('spatiotemporalBigDataStoreVirtualMachineDataDiskType')]"
+              }
             }
           ]
         },
