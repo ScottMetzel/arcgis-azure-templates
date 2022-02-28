@@ -4,133 +4,18 @@
   "functions": [
   ],
   "parameters": {
-    "location": {
-      "type": "string",
-      "defaultValue": "eastus",
-      "metadata": {
-        "description": "Azure Region for the site deployment. All Resources provisioned are created here"
-      }
-    },
-    "environment": {
-      "type": "string",
-      "defaultValue": "AzureCloud",
-      "allowedValues": [
-        "AzureCloud",
-        "AzureGermanCloud",
-        "AzureUSGovernment",
-        "AzureChinaCloud"
-      ],
-      "metadata": {
-        "description": "(Optional) Azure Environment for the deployment. E.g:- Public Azure, U.S. Gov. Cloud, Azure Germany, Azure China"
-      }
-    },
-    "deploymentPrefix": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "(Optional) Prefix applied to all resources provisioned as part of this template"
-      },
-      "maxLength": 3
-    },
-    "usesPrivateIP": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether Azure Files (SMB protocol) is used for the server config and portal content store"
-      }
-    },
-    "deployPublicIPWhenUsingPrivateIP": {
-      "type": "bool",
-      "defaultValue": true,
-      "metadata": {
-        "description": "(Optional) Deploys an unused public IP when using a Private Ip as Application Gateway V2 doesn't support only Private IP deployments yet."
-      }
-    },
-    "usesExistingPublicIP": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether to use existing Public IP is usesPrivateIP is false"
-      }
-    },
-    "existingPublicIPResourceGroupName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Name of the Resource Group for the existing Public IP"
-      }
-    },
-    "existingPublicIPName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Name of the existing Public IP"
-      }
-    },
-    "dnsPrefixForPublicIpAddress": {
-      "type": "string",
-      "maxLength": 80,
-      "defaultValue": "",
-      "metadata": {
-        "description": "DNS name for the Public IP address resource asociated with the site deployment. It needs to be unique across the region of deployment"
-      }
-    },
-    "externalDnsHostName": {
-      "type": "string",
-      "metadata": {
-        "description": "DNS name for the site deployment. It will be a custom domain (e.g. mysite.contoso.com) if using a Private IP or an SSL certificate, otherwise will be the Azure DNS <dnsPrefixForPublicIpAddress>.<location>.cloudapp.azure.com"
-      }
-    },
-    "sslCertificateFileUrl": {
-      "type": "string",
-      "metadata": {
-        "description": "Accessible file path for SSL Certificate"
-      },
-      "defaultValue": ""
-    },
-    "sslCertificateFileName": {
-      "type": "string",
-      "metadata": {
-        "description": "File name for the SSL Certificate"
-      },
-      "defaultValue": ""
-    },
-    "sslCertificateData": {
-      "type": "string",
-      "metadata": {
-        "description": "Base-64 encoded form of the .pfx file. This is the cert terminating on the Application Gateway."
-      },
-      "defaultValue": ""
-    },
-    "sslCertificatePassword": {
+    "adminPassword": {
       "type": "securestring",
+      "defaultValue": "",
       "metadata": {
-        "description": "Password for .pfx certificate"
-      },
-      "defaultValue": ""
-    },
-    "selfSignedSSLCertificatePassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Private Key for the Backend Self signed SSL Certificate"
+        "description": "Password for the Virtual Machine Administrator (Windows) Account"
       }
     },
-    "virtualNetworkResourceGroupName": {
+    "adminUsername": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Name of the Resource Group for the existing Virtual Network specified with the 'existingVirtualNetworkName' parameter"
-      }
-    },
-    "existingVirtualNetworkName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the existing Virtual Network"
-      }
-    },
-    "appGatewaySubnetName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
+        "description": "Username for the Virtual Machine Administrator (Windows) Account"
       }
     },
     "appGatewayPrivateIP": {
@@ -147,91 +32,77 @@
         "description": "Subnet associated with Private IP"
       }
     },
-    "appGatewayName": {
+    "appGatewaySubnetName": {
       "type": "string",
       "metadata": {
-        "description": "Name of Application Gateway Resource"
+        "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
       }
     },
-    "appGatewayResourceGroupName": {
+    "arcgisDeploymentId": {
       "type": "string",
       "metadata": {
-        "description": "Name of Application Gateway Resource Group Name"
-      }
+        "description": "Deployment Id required in case of post deployment operations and optional in case of new deployments"
+      },
+      "defaultValue": ""
     },
-    "imageReferences": {
-      "type": "object",
-      "metadata": {
-        "description": "Details of ArcGIS marketplace image or User Images"
-      }
-    },
-    "adminUsername": {
+    "autoShutDownTime": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Username for the Virtual Machine Administrator (Windows) Account"
+        "description": "(Optional) Auto Shut down time in hh:ss format."
       }
     },
-    "adminPassword": {
+    "AzureSQLAADAdministratorLoginName": {
+      "type": "string",
+      "metadata": {
+        "description": "The login name of the Azure AD application, user, or group, to use as the AAD Administrator for the Azure SQL Server"
+      }
+    },
+    "AzureSQLAADAdministratorObjectID": {
+      "type": "string",
+      "metadata": {
+        "description": "The object ID of the Azure AD application, user, or group, to use as the AAD Administrator for the Azure SQL Server"
+      }
+    },
+    "AzureSQLAADAdministratorType": {
+      "type": "string",
+      "defaultValue": "Group",
+      "allowedValues": [
+        "Application",
+        "Group",
+        "User"
+      ],
+      "metadata": {
+        "description": "The type of Azure AD Administrator to add - a, application, user, or group."
+      }
+    },
+    "AzureSQLServerAdministratorName": {
+      "type": "string",
+      "defaultValue": "arcgisdba",
+      "metadata": {
+        "description": "The username of the local administrator for the Azure SQL Server"
+      }
+    },
+    "AzureSQLServerAdministratorPassword": {
       "type": "securestring",
-      "defaultValue": "",
       "metadata": {
-        "description": "Password for the Virtual Machine Administrator (Windows) Account"
+        "description": "The password of the local administrator for the Azure SQL Server"
       }
     },
-    "fileShareVirtualMachineName": {
+    "AzureSQLServerSubnetName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the File Share Virtual Machine"
+        "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
       }
     },
-    "fileShareVirtualMachineSize": {
+    "dataStoreTypes": {
       "type": "string",
-      "defaultValue": "Standard_DS2_v2",
+      "defaultValue": "Relational",
       "metadata": {
-        "description": "Size used for the File Share Virtual Machine"
+        "description": "(Optional) The types of ArcGIS Data Stores that are enabled for this deployment"
       }
     },
-    "fileShareVirtualMachineOSDiskSize": {
-      "type": "int",
-      "defaultValue": 128,
-      "allowedValues": [
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the File Share Virtual Machine"
-      }
-    },
-    "fileShareVirtualMachineOSDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the File Share Virtual Machine"
-      }
-    },
-    "enableFileShareVirtualMachineDataDisk": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether an additional Managed Disk is attached to the File Share Virtual Machine"
-      }
-    },
-    "fileShareVirtualMachineDataDiskSize": {
+    "dataStoreVirtualMachineDataDiskSize": {
       "type": "int",
       "defaultValue": 32,
       "allowedValues": [
@@ -248,10 +119,10 @@
         32767
       ],
       "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the File Share Virtual Machine"
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the DataStore tier of Virtual Machines"
       }
     },
-    "fileShareVirtualMachineDataDiskType": {
+    "dataStoreVirtualMachineDataDiskType": {
       "type": "string",
       "defaultValue": "Premium_LRS",
       "allowedValues": [
@@ -261,208 +132,13 @@
         "UltraSSD_LRS"
       ],
       "metadata": {
-        "description": "(Optional) Indicates whether an additional Managed Disk is attached to the Server tier of Virtual Machines"
-      }
-    },
-    "serverVirtualMachineNames": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of virtual machine names for the Server Tier"
-      }
-    },
-    "serverVirtualMachineImageSpecs": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of Image Type used refrencing useManagedDiskImage,userImageName,userImageResourceGroupName,imagePublisher,imageOffery and imageSKU by index"
-      }
-    },
-    "serverVirtualMachineSize": {
-      "type": "string",
-      "defaultValue": "Standard_DS3_v2",
-      "metadata": {
-        "description": "Virtual Machine Size for the Server tier of machines"
-      }
-    },
-    "serverVirtualMachineOSDiskSize": {
-      "type": "int",
-      "defaultValue": 128,
-      "allowedValues": [
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Server tier of Virtual Machines"
-      }
-    },
-    "serverVirtualMachineOSDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "(Optional) Managed Disk Type for the Operating System (c Drive) Disk for the Server tier of Virtual Machines"
-      }
-    },
-    "enableServerVirtualMachineDataDisk": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether an additional Managed Disk is attached to the Server tier of Virtual Machines"
-      }
-    },
-    "serverVirtualMachineDataDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Server tier of Virtual Machines"
-      }
-    },
-    "serverVirtualMachineDataDiskSize": {
-      "type": "int",
-      "defaultValue": 32,
-      "allowedValues": [
-        32,
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk size for the additional (Data) disk attached to the Server tier of Virtual Machines"
-      }
-    },
-    "portalVirtualMachineNames": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of virtual machine names for the Portal Tier"
-      }
-    },
-    "portalVirtualMachineImageSpecs": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of Image Type used refrencing useManagedDiskImage,userImageName,userImageResourceGroupName,imagePublisher,imageOffery and imageSKU by index"
-      }
-    },
-    "portalVirtualMachineSize": {
-      "type": "string",
-      "defaultValue": "Standard_DS3_v2",
-      "metadata": {
-        "description": "Virtual Machine Size for the Portal tier of machines"
-      }
-    },
-    "portalVirtualMachineOSDiskSize": {
-      "type": "int",
-      "defaultValue": 128,
-      "allowedValues": [
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        327678
-      ],
-      "metadata": {
-        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Portal tier of Virtual Machines"
-      }
-    },
-    "portalVirtualMachineOSDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "(Optional) Managed Disk Type for the Operating System (c Drive) Disk for the Portal tier of Virtual Machines"
-      }
-    },
-    "enablePortalVirtualMachineDataDisk": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether an additional Managed Disk is attached to the Portal tier of Virtual Machines"
-      }
-    },
-    "portalVirtualMachineDataDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Portal tier of Virtual Machines"
-      }
-    },
-    "portalVirtualMachineDataDiskSize": {
-      "type": "int",
-      "defaultValue": 32,
-      "allowedValues": [
-        32,
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Portal tier of Virtual Machines"
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Data Store tier of Virtual Machines"
       }
     },
     "dataStoreVirtualMachineNames": {
       "type": "string",
       "metadata": {
         "description": "Comma seperated list of virtual machine names for the Data Store Tier"
-      }
-    },
-    "dataStoreVirtualMachineImageSpecs": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of Image Type used refrencing useManagedDiskImage,userImageName,userImageResourceGroupName,imagePublisher,imageOffery and imageSKU by index"
-      }
-    },
-    "dataStoreVirtualMachineSize": {
-      "type": "string",
-      "defaultValue": "Standard_DS3_v2",
-      "metadata": {
-        "description": "Virtual Machine Size for the Data Store tier of machines"
       }
     },
     "dataStoreVirtualMachineOSDiskSize": {
@@ -497,244 +173,41 @@
         "description": "(Optional) Managed Disk Type for the Operating System (c Drive) Disk for the DataStore tier of Virtual Machines"
       }
     },
-    "enableDataStoreVirtualMachineDataDisk": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether an additional Managed Disk is attached to the Data Store tier of Virtual Machines"
-      }
-    },
-    "dataStoreVirtualMachineDataDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Data Store tier of Virtual Machines"
-      }
-    },
-    "dataStoreVirtualMachineDataDiskSize": {
-      "type": "int",
-      "defaultValue": 32,
-      "allowedValues": [
-        32,
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the DataStore tier of Virtual Machines"
-      }
-    },
-    "spatiotemporalBigdataStoreVirtualMachineNames": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of virtual machine names for the Spatiotemporal Big Data Store Tier"
-      },
-      "defaultValue": ""
-    },
-    "spatiotemporalBigDataStoreVirtualMachineImageSpecs": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of Image Type used refrencing useManagedDiskImage,userImageName,userImageResourceGroupName,imagePublisher,imageOffery and imageSKU by index"
-      },
-      "defaultValue": ""
-    },
-    "spatiotemporalBigDataStoreVirtualMachineSize": {
+    "dataStoreVirtualMachineSize": {
       "type": "string",
       "defaultValue": "Standard_DS3_v2",
       "metadata": {
-        "description": "Virtual Machine Size for the Spatiotemporal Big Data Store tier of machines"
+        "description": "Virtual Machine Size for the Data Store tier of machines"
       }
     },
-    "spatiotemporalBigDataStoreVirtualMachineOSDiskSize": {
-      "type": "int",
-      "defaultValue": 128,
-      "allowedValues": [
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Portal tier of Virtual Machines"
-      }
-    },
-    "spatiotemporalBigDataStoreVirtualMachineOSDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Spatiotemporal Big Data Store tier of Virtual Machines"
-      }
-    },
-    "enableSpatiotemporalBigDataStoreVirtualMachineDataDisk": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether an additional Managed Disk is attached to the Spatiotemporal Big Data Store tier of Virtual Machines"
-      }
-    },
-    "spatiotemporalBigDataStoreVirtualMachineDataDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Spatiotemporal Big Data Store tier of Virtual Machines"
-      }
-    },
-    "spatiotemporalBigDataStoreVirtualMachineDataDiskSize": {
-      "type": "int",
-      "defaultValue": 32,
-      "allowedValues": [
-        32,
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Spatiotemporal Big Data tier of Virtual Machines"
-      }
-    },
-    "isTileCacheDataStoreClustered": {
-      "type": "bool",
-      "metadata": {
-        "description": "TileCache Datastore architecture mode set to `cluster` if true, else `masterSlave`"
-      },
-      "defaultValue": false
-    },
-    "tileCacheDataStoreVirtualMachineNames": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of virtual machine names for the Tile Cache Data Store Tier"
-      },
-      "defaultValue": ""
-    },
-    "tileCacheDataStoreVirtualMachineImageSpecs": {
-      "type": "string",
-      "metadata": {
-        "description": "Comma seperated list of Image Type used refrencing useManagedDiskImage,userImageName,userImageResourceGroupName,imagePublisher,imageOffery and imageSKU by index"
-      },
-      "defaultValue": ""
-    },
-    "tileCacheDataStoreVirtualMachineSize": {
-      "type": "string",
-      "defaultValue": "Standard_DS3_v2",
-      "metadata": {
-        "description": "Virtual Machine Size for the Tile Cache Data Store tier of machines"
-      }
-    },
-    "tileCacheDataStoreVirtualMachineOSDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Tile Cache Data Store tier of Virtual Machines"
-      }
-    },
-    "tileCacheDataStoreVirtualMachineOSDiskSize": {
-      "type": "int",
-      "defaultValue": 128,
-      "allowedValues": [
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Portal tier of Virtual Machines"
-      }
-    },
-    "enableTileCacheDataStoreVirtualMachineDataDisk": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether an additional Managed Disk is attached to the Tile Cache Data Store tier of Virtual Machines"
-      }
-    },
-    "tileCacheDataStoreVirtualMachineDataDiskType": {
-      "type": "string",
-      "defaultValue": "Premium_LRS",
-      "allowedValues": [
-        "Premium_LRS",
-        "Standard_LRS",
-        "StandardSSD_LRS",
-        "UltraSSD_LRS"
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Tile Cache Store tier of Virtual Machines"
-      }
-    },
-    "tileCacheDataStoreVirtualMachineDataDiskSize": {
-      "type": "int",
-      "defaultValue": 32,
-      "allowedValues": [
-        32,
-        64,
-        128,
-        256,
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32767
-      ],
-      "metadata": {
-        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Tile Cache Data tier of Virtual Machines"
-      }
-    },
-    "timeZoneId": {
+    "deploymentPrefix": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "(Optional) Standard Id for the timezone to set for the Virtual Machines in the deployment"
+        "description": "(Optional) Prefix applied to all resources provisioned as part of this template"
+      },
+      "maxLength": 3
+    },
+    "deploymentTrackingID": {
+      "type": "string",
+      "metadata": {
+        "description": "(Optional) deployment Tracking ID based on Orchestrator being Automation or Cloud Builder "
+      },
+      "defaultValue": "01702208-6a87-494b-9f6c-5e6be4bea47b"
+    },
+    "deployPublicIPWhenUsingPrivateIP": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "(Optional) Deploys an unused public IP when using a Private Ip as Application Gateway V2 doesn't support only Private IP deployments yet."
+      }
+    },
+    "dnsPrefixForPublicIpAddress": {
+      "type": "string",
+      "maxLength": 80,
+      "defaultValue": "",
+      "metadata": {
+        "description": "DNS name for the Public IP address resource asociated with the site deployment. It needs to be unique across the region of deployment"
       }
     },
     "enableAutomaticUpdates": {
@@ -744,207 +217,12 @@
         "description": "(Optional) Indicates whether to enable Automatic (Windows) Operating System updates"
       }
     },
-    "joinWindowsDomain": {
-      "type": "bool",
-      "metadata": {
-        "description": "(Optional) Indicates whether the virtual machines should join an existing Windows Active Directory which provides domain join and DNS services in the Virtual Network"
-      },
-      "defaultValue": false
-    },
-    "windowsDomainName": {
-      "type": "string",
-      "metadata": {
-        "description": "(Optional) Domain FQDN where the virtual machine will be joined. Required if joinWindowsDomain = true"
-      },
-      "defaultValue": ""
-    },
-    "windowsDomainAdministratorUserName": {
-      "type": "string",
-      "metadata": {
-        "description": "(Optional) Username for the Active Directory Domain Administrator account where the virtual machine will be joined. Required if joinWindowsDomain = true"
-      },
-      "defaultValue": ""
-    },
-    "windowsDomainAdministratorPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "(Optional) Password for the Active Directory Domain Administrator account where the virtual machine will be joined. Required if joinWindowsDomain = true"
-      },
-      "defaultValue": ""
-    },
-    "omsWorkspaceName": {
-      "type": "string",
-      "metadata": {
-        "description": "Azure Monitor Logs workspace name"
-      },
-      "defaultValue": ""
-    },
-    "omsWorkspaceResourceGroupName": {
-      "type": "string",
-      "metadata": {
-        "description": "Azure Monitor Logs Workspace Resource Group Name"
-      },
-      "defaultValue": ""
-    },
-    "serverContext": {
-      "type": "string",
-      "metadata": {
-        "description": "ArcGIS Server Site Context"
-      },
-      "defaultValue": "server"
-    },
-    "portalContext": {
-      "type": "string",
-      "metadata": {
-        "description": "ArcGIS Portal Site Context"
-      },
-      "defaultValue": "portal"
-    },
-    "arcgisServiceAccountUserName": {
-      "type": "string",
-      "metadata": {
-        "description": "User name for the ArcGIS (Windows) Service Account"
-      },
-      "defaultValue": "arcgis"
-    },
-    "arcgisServiceAccountPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Password for the ArcGIS (Windows) Service Account"
-      },
-      "defaultValue": ""
-    },
-    "arcgisServiceAccountIsDomainAccount": {
+    "enableAutoShutDown": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "(Optional) Indicates whether ArcGIS Service Account is a Domain Account."
+        "description": "(Optional) Indicates whether to enable auto shutdown at specified time."
       }
-    },
-    "primarySiteAdministratorAccountUserName": {
-      "type": "string",
-      "metadata": {
-        "description": "User name for the ArcGIS Server Site Primary Site Administrator"
-      },
-      "defaultValue": "siteadmin"
-    },
-    "primarySiteAdministratorAccountPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "User name for the ArcGIS Server Site Primary Site Administrator"
-      }
-    },
-    "serverLicenseFileUrl": {
-      "type": "string",
-      "metadata": {
-        "description": "Accessible file path for ArcGIS Server License"
-      },
-      "defaultValue": ""
-    },
-    "serverLicenseFileName": {
-      "type": "string",
-      "metadata": {
-        "description": "File name for the ArcGIS Server License"
-      },
-      "defaultValue": ""
-    },
-    "portalLicenseFileUrl": {
-      "type": "string",
-      "metadata": {
-        "description": "Accessible file path for Portal for ArcGIS License"
-      },
-      "defaultValue": ""
-    },
-    "portalLicenseFileName": {
-      "type": "string",
-      "metadata": {
-        "description": "File name for the Portal for ArcGIS License"
-      },
-      "defaultValue": ""
-    },
-    "portalLicenseUserTypeId": {
-      "type": "string",
-      "metadata": {
-        "description": "Portal for ArcGIS License User Type Id to be used to Configure Portal Site"
-      },
-      "defaultValue": ""
-    },
-    "dataStoreTypes": {
-      "type": "string",
-      "defaultValue": "Relational",
-      "metadata": {
-        "description": "(Optional) The types of ArcGIS Data Stores that are enabled for this deployment"
-      }
-    },
-    "isMultiMachineTileCacheDataStore": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether TileCache Datastore is a multi machine setup"
-      }
-    },
-    "useCloudStorage": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether Azure Storage is used for the server config and portal content store"
-      }
-    },
-    "useAzureFiles": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether Azure Files (SMB protocol) is used for the server config and portal content store"
-      }
-    },
-    "cloudStorageAccountName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "(Optional) Name of the Azure Storage Account used. Required if 'useCloudStorage' is set to true"
-      }
-    },
-    "cloudStorageAccountResourceGroupName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "(Optional) Name of the resource group for the Azure Storage Account specified with 'cloudStorageAccountName'. Required if 'useCloudStorage' is set to true"
-      }
-    },
-    "cloudStorageAccountKey": {
-      "type": "securestring",
-      "defaultValue": "",
-      "metadata": {
-        "description": "(Optional) Storage Account Access Key for the Azure Storage Account specified with 'cloudStorageAccountName'. Required if 'useCloudStorage' is set to true"
-      }
-    },
-    "enableServerLogHarvesterPlugin": {
-      "type": "bool",
-      "metadata": {
-        "description": "Enable Server Log Harvester Plugin "
-      },
-      "defaultValue": false
-    },
-    "_artifactsLocationSasToken": {
-      "type": "securestring",
-      "metadata": {
-        "description": "(SAS) Shared Access Token for the deployment artifacts in an Azure Blob Storage Container"
-      },
-      "defaultValue": ""
-    },
-    "_artifactsLocation": {
-      "type": "string",
-      "metadata": {
-        "description": "Fully qualified URL for the deployment artifacts location in an Azure Blob Storage Container"
-      },
-      "defaultValue": ""
-    },
-    "debugMode": {
-      "type": "bool",
-      "metadata": {
-        "description": "(Optional) Indicates whether to enable debug settings on the site deployment. Used for troubleshooting only and should not be used for a Production Deployment"
-      },
-      "defaultValue": false
     },
     "enableRDPAccess": {
       "type": "bool",
@@ -953,49 +231,40 @@
         "description": "(Optional) Indicates whether Remote Desktop Access to the File Share Machine should be enabled."
       }
     },
-    "enableAutoShutDown": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "(Optional) Indicates whether to enable auto shutdown at specified time."
-      }
-    },
-    "autoShutDownTime": {
+    "existingPublicIPName": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "(Optional) Auto Shut down time in hh:ss format."
+        "description": "Name of the existing Public IP"
       }
     },
-    "deploymentTimestamp": {
+    "existingPublicIPResourceGroupName": {
       "type": "string",
-      "defaultValue": "[utcNow()]",
+      "defaultValue": "",
       "metadata": {
-        "description": "An optional timestamp used to record as a tag which is used by ArcGIS Deployment Tools"
+        "description": "Name of the Resource Group for the existing Public IP"
       }
     },
-    "arcgisDeploymentVersion": {
+    "existingVirtualNetworkName": {
       "type": "string",
       "metadata": {
-        "description": "(Optional) Version number of the ArcGIS Software used in the deployment"
-      },
-      "defaultValue": "10.9"
+        "description": "Name of the existing Virtual Network"
+      }
     },
-    "arcgisDeploymentId": {
+    "externalDnsHostName": {
       "type": "string",
       "metadata": {
-        "description": "Deployment Id required in case of post deployment operations and optional in case of new deployments"
-      },
-      "defaultValue": ""
+        "description": "DNS name for the site deployment. It will be a custom domain (e.g. mysite.contoso.com) if using a Private IP or an SSL certificate, otherwise will be the Azure DNS <dnsPrefixForPublicIpAddress>.<location>.cloudapp.azure.com"
+      }
     },
-    "deploymentTrackingID": {
+    "fileShareName": {
       "type": "string",
+      "defaultValue": "fileshare",
       "metadata": {
-        "description": "(Optional) deployment Tracking ID based on Orchestrator being Automation or Cloud Builder "
-      },
-      "defaultValue": "01702208-6a87-494b-9f6c-5e6be4bea47b"
+        "description": "The name of the file share to create"
+      }
     },
-    "RDPVMAvailabilityZone": {
+    "GISDatastoreRelationalVMAvailabilityZone": {
       "type": "int",
       "defaultValue": 1,
       "minValue": 1,
@@ -1004,7 +273,16 @@
         "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
       }
     },
-    "WebAdaptorVMAvailabilityZone": {
+    "GISDatastoreSpatiotemporalVMAvailabilityZone": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 3,
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "GISDatastoreTileCacheAvailabilityZone": {
       "type": "int",
       "defaultValue": 1,
       "minValue": 1,
@@ -1031,61 +309,18 @@
         "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
       }
     },
-    "GISDatastoreRelationalVMAvailabilityZone": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 1,
-      "maxValue": 3,
-      "metadata": {
-        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
-      }
-    },
-    "GISDatastoreTileCacheAvailabilityZone": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 1,
-      "maxValue": 3,
-      "metadata": {
-        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
-      }
-    },
-    "GISDatastoreSpatiotemporalVMAvailabilityZone": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 1,
-      "maxValue": 3,
-      "metadata": {
-        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
-      }
-    },
-    "OSImageSKU": {
-      "type": "string",
-      "allowedValues": [
-        "2019-datacenter-gensecond",
-        "2022-datacenter-g2",
-        "2022-datacenter-azure-edition",
-        "2022-datacenter-azure-edition-smalldisk"
-      ],
-      "defaultValue": "2022-datacenter-azure-edition"
-    },
-    "StorageAccountName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the storage account used with Azure Files, and for the configuration data."
-      }
-    },
-    "fileShareName": {
-      "type": "string",
-      "defaultValue": "fileshare",
-      "metadata": {
-        "description": "The name of the file share to create"
-      }
-    },
-    "WebAdaptorSubnetName": {
+    "GISSubnetName": {
       "type": "string",
       "metadata": {
         "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
       }
+    },
+    "joinWindowsDomain": {
+      "type": "bool",
+      "metadata": {
+        "description": "(Optional) Indicates whether the virtual machines should join an existing Windows Active Directory which provides domain join and DNS services in the Virtual Network"
+      },
+      "defaultValue": false
     },
     "JumpBoxSubnetName": {
       "type": "string",
@@ -1093,65 +328,10 @@
         "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
       }
     },
-    "GISSubnetName": {
+    "JumpBoxVirtualMachineName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
-      }
-    },
-    "StorageAccountSubnetName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
-      }
-    },
-    "AzureSQLServerSubnetName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
-      }
-    },
-    "AzureSQLServerAdministratorName": {
-      "type": "string",
-      "defaultValue": "arcgisdba",
-      "metadata": {
-        "description": "The username of the local administrator for the Azure SQL Server"
-      }
-    },
-    "AzureSQLServerAdministratorPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The password of the local administrator for the Azure SQL Server"
-      }
-    },
-    "AzureSQLAADAdministratorType": {
-      "type": "string",
-      "defaultValue": "Group",
-      "allowedValues": [
-        "Application",
-        "Group",
-        "User"
-      ],
-      "metadata": {
-        "description": "The type of Azure AD Administrator to add - a, application, user, or group."
-      }
-    },
-    "AzureSQLAADAdministratorLoginName": {
-      "type": "string",
-      "metadata": {
-        "description": "The login name of the Azure AD application, user, or group, to use as the AAD Administrator for the Azure SQL Server"
-      }
-    },
-    "AzureSQLAADAdministratorObjectID": {
-      "type": "string",
-      "metadata": {
-        "description": "The object ID of the Azure AD application, user, or group, to use as the AAD Administrator for the Azure SQL Server"
-      }
-    },
-    "TrustedRootCertificateData": {
-      "type": "string",
-      "metadata": {
-        "description": "A base64 string representing the trusted root certificate to add to the Application Gateway. Used for backend communications."
+        "description": "Name of the virtual machine for the Portal Tier"
       }
     },
     "JumpBoxVirtualMachineOSDiskSize": {
@@ -1186,7 +366,178 @@
         "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Jump Box of Virtual Machines"
       }
     },
-    "WebAdaptorVirtualMachineOSDiskSize": {
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "metadata": {
+        "description": "Azure Region for the site deployment. All Resources provisioned are created here"
+      }
+    },
+    "omsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure Monitor Logs workspace name"
+      },
+      "defaultValue": ""
+    },
+    "omsWorkspaceResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure Monitor Logs Workspace Resource Group Name"
+      },
+      "defaultValue": ""
+    },
+    "OSImageSKU": {
+      "type": "string",
+      "allowedValues": [
+        "2019-datacenter-gensecond",
+        "2022-datacenter-g2",
+        "2022-datacenter-azure-edition",
+        "2022-datacenter-azure-edition-smalldisk"
+      ],
+      "defaultValue": "2022-datacenter-azure-edition"
+    },
+    "portalContext": {
+      "type": "string",
+      "metadata": {
+        "description": "ArcGIS Portal Site Context"
+      },
+      "defaultValue": "portal"
+    },
+    "portalVirtualMachineDataDiskSize": {
+      "type": "int",
+      "defaultValue": 32,
+      "allowedValues": [
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Portal tier of Virtual Machines"
+      }
+    },
+    "portalVirtualMachineDataDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Portal tier of Virtual Machines"
+      }
+    },
+    "portalVirtualMachineNames": {
+      "type": "string",
+      "metadata": {
+        "description": "Comma seperated list of virtual machine names for the Portal Tier"
+      }
+    },
+    "portalVirtualMachineOSDiskSize": {
+      "type": "int",
+      "defaultValue": 128,
+      "allowedValues": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        327678
+      ],
+      "metadata": {
+        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Portal tier of Virtual Machines"
+      }
+    },
+    "portalVirtualMachineOSDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "(Optional) Managed Disk Type for the Operating System (c Drive) Disk for the Portal tier of Virtual Machines"
+      }
+    },
+    "portalVirtualMachineSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS3_v2",
+      "metadata": {
+        "description": "Virtual Machine Size for the Portal tier of machines"
+      }
+    },
+    "RDPVMAvailabilityZone": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 3,
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "serverContext": {
+      "type": "string",
+      "metadata": {
+        "description": "ArcGIS Server Site Context"
+      },
+      "defaultValue": "server"
+    },
+    "serverVirtualMachineDataDiskSize": {
+      "type": "int",
+      "defaultValue": 32,
+      "allowedValues": [
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed disk size for the additional (Data) disk attached to the Server tier of Virtual Machines"
+      }
+    },
+    "serverVirtualMachineDataDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Server tier of Virtual Machines"
+      }
+    },
+    "serverVirtualMachineNames": {
+      "type": "string",
+      "metadata": {
+        "description": "Comma seperated list of virtual machine names for the Server Tier"
+      }
+    },
+    "serverVirtualMachineOSDiskSize": {
       "type": "int",
       "defaultValue": 128,
       "allowedValues": [
@@ -1202,10 +553,10 @@
         32767
       ],
       "metadata": {
-        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Web Adaptor tier of Virtual Machines"
+        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Server tier of Virtual Machines"
       }
     },
-    "WebAdaptorVirtualMachineOSDiskType": {
+    "serverVirtualMachineOSDiskType": {
       "type": "string",
       "defaultValue": "Premium_LRS",
       "allowedValues": [
@@ -1215,7 +566,237 @@
         "UltraSSD_LRS"
       ],
       "metadata": {
-        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Web Adaptor of Virtual Machines"
+        "description": "(Optional) Managed Disk Type for the Operating System (c Drive) Disk for the Server tier of Virtual Machines"
+      }
+    },
+    "serverVirtualMachineSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS3_v2",
+      "metadata": {
+        "description": "Virtual Machine Size for the Server tier of machines"
+      }
+    },
+    "spatiotemporalBigDataStoreVirtualMachineDataDiskSize": {
+      "type": "int",
+      "defaultValue": 32,
+      "allowedValues": [
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Spatiotemporal Big Data tier of Virtual Machines"
+      }
+    },
+    "spatiotemporalBigDataStoreVirtualMachineDataDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Spatiotemporal Big Data Store tier of Virtual Machines"
+      }
+    },
+    "spatiotemporalBigdataStoreVirtualMachineNames": {
+      "type": "string",
+      "metadata": {
+        "description": "Comma seperated list of virtual machine names for the Spatiotemporal Big Data Store Tier"
+      },
+      "defaultValue": ""
+    },
+    "spatiotemporalBigDataStoreVirtualMachineOSDiskSize": {
+      "type": "int",
+      "defaultValue": 128,
+      "allowedValues": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Portal tier of Virtual Machines"
+      }
+    },
+    "spatiotemporalBigDataStoreVirtualMachineOSDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Spatiotemporal Big Data Store tier of Virtual Machines"
+      }
+    },
+    "spatiotemporalBigDataStoreVirtualMachineSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS3_v2",
+      "metadata": {
+        "description": "Virtual Machine Size for the Spatiotemporal Big Data Store tier of machines"
+      }
+    },
+    "sslCertificateData": {
+      "type": "string",
+      "metadata": {
+        "description": "Base-64 encoded form of the .pfx file. This is the cert terminating on the Application Gateway."
+      },
+      "defaultValue": ""
+    },
+    "sslCertificatePassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for .pfx certificate"
+      },
+      "defaultValue": ""
+    },
+    "StorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the storage account used with Azure Files, and for the configuration data."
+      }
+    },
+    "StorageAccountSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
+      }
+    },
+    "tileCacheDataStoreVirtualMachineDataDiskSize": {
+      "type": "int",
+      "defaultValue": 32,
+      "allowedValues": [
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Tile Cache Data tier of Virtual Machines"
+      }
+    },
+    "tileCacheDataStoreVirtualMachineDataDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "(Optional) Managed disk type for the additional (Data) disk attached to the Tile Cache Store tier of Virtual Machines"
+      }
+    },
+    "tileCacheDataStoreVirtualMachineNames": {
+      "type": "string",
+      "metadata": {
+        "description": "Comma seperated list of virtual machine names for the Tile Cache Data Store Tier"
+      },
+      "defaultValue": ""
+    },
+    "tileCacheDataStoreVirtualMachineOSDiskSize": {
+      "type": "int",
+      "defaultValue": 128,
+      "allowedValues": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Portal tier of Virtual Machines"
+      }
+    },
+    "tileCacheDataStoreVirtualMachineOSDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Tile Cache Data Store tier of Virtual Machines"
+      }
+    },
+    "tileCacheDataStoreVirtualMachineSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS3_v2",
+      "metadata": {
+        "description": "Virtual Machine Size for the Tile Cache Data Store tier of machines"
+      }
+    },
+    "timeZoneId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "(Optional) Standard Id for the timezone to set for the Virtual Machines in the deployment"
+      }
+    },
+    "TrustedRootCertificateData": {
+      "type": "string",
+      "metadata": {
+        "description": "A base64 string representing the trusted root certificate to add to the Application Gateway. Used for backend communications."
+      }
+    },
+    "usesExistingPublicIP": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "(Optional) Indicates whether to use existing Public IP is usesPrivateIP is false"
+      }
+    },
+    "usesPrivateIP": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "(Optional) Indicates whether Azure Files (SMB protocol) is used for the server config and portal content store"
+      }
+    },
+    "virtualNetworkResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Resource Group for the existing Virtual Network specified with the 'existingVirtualNetworkName' parameter"
+      }
+    },
+    "WebAdaptorSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
       }
     },
     "WebAdaptorVirtualMachineDataDiskSize": {
@@ -1250,20 +831,75 @@
       "metadata": {
         "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Web Adaptor of Virtual Machines"
       }
+    },
+    "WebAdaptorVirtualMachineOSDiskSize": {
+      "type": "int",
+      "defaultValue": 128,
+      "allowedValues": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32767
+      ],
+      "metadata": {
+        "description": "(Optional) Managed Disk Size for the Operating System (c Drive) Disk for the Web Adaptor tier of Virtual Machines"
+      }
+    },
+    "WebAdaptorVirtualMachineOSDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "StandardSSD_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Web Adaptor of Virtual Machines"
+      }
+    },
+    "WebAdaptorVMAvailabilityZone": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 3,
+      "metadata": {
+        "description": "The single availability zone to use for the RDP VM. The length of the array should be greater than or equal to the number of VMs to deploy (e.g., 4 VMs to build, then at least 4 availability zones should be listed - '1', '2', '3', '2'. Provide an empty array to avoid using Availability Zones.)"
+      }
+    },
+    "windowsDomainAdministratorPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "(Optional) Password for the Active Directory Domain Administrator account where the virtual machine will be joined. Required if joinWindowsDomain = true"
+      },
+      "defaultValue": ""
+    },
+    "windowsDomainAdministratorUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "(Optional) Username for the Active Directory Domain Administrator account where the virtual machine will be joined. Required if joinWindowsDomain = true"
+      },
+      "defaultValue": ""
+    },
+    "windowsDomainName": {
+      "type": "string",
+      "metadata": {
+        "description": "(Optional) Domain FQDN where the virtual machine will be joined. Required if joinWindowsDomain = true"
+      },
+      "defaultValue": ""
     }
   },
   "variables": {
     "deploymentId": "[if(empty(parameters('arcgisDeploymentId')),uniqueString(resourceGroup().id, concat(parameters('serverContext'), parameters('location')), parameters('externalDnsHostName')),parameters('arcgisDeploymentId'))]",
     "computeApiVersion": "2018-06-01",
     "networkApiVersion": "2018-08-01",
-    "environmentToBlobEndpoint": {
-      "AzureCloud": ".blob.core.windows.net",
-      "AzureGermanCloud": ".blob.core.cloudapi.de",
-      "AzureUSGovernment": ".blob.core.usgovcloudapi.net",
-      "AzureChinaCloud": ".blob.core.chinacloudapi.cn"
-    },
     "publicIPAddressResourceName": "[if(parameters('usesExistingPublicIP'), parameters('existingPublicIPName'), concat(parameters('deploymentPrefix'), 'PublicIP'))]",
-    "publicIPAddressRDPResourceName": "[concat(parameters('deploymentPrefix'), 'PublicIP-RDP')]",
     "publicIPAddressResourceGroupName": "[if(parameters('usesExistingPublicIP'), parameters('existingPublicIPResourceGroupName'), resourceGroup().name)]",
     "unusedPublicIPPWhenUsingPrivateIPDnsPrefix": "[concat('ip',variables('deploymentId'),parameters('serverContext'))]",
     "unusedPublicIPWhenUsingPrivateIPResourceName": "[concat(variables('unusedPublicIPPWhenUsingPrivateIPDnsPrefix'),'UnusedPublicIP')]",
@@ -1274,21 +910,18 @@
     "appGatewaySubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('appGatewaySubnetName'))]",
     "storageAccountSubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('StorageAccountSubnetName'))]",
     "DBSubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('AzureSQLServerSubnetName'))]",
-    "nicName": "nic",
+    "nicName": "NIC-01",
     "azureSQLServerName": "[concat(parameters('deploymentPrefix'), '-ASQL')]",
     "azureSQLServerPrivateEndpointName": "[concat(variables('azureSQLServerName'), '-PE-01')]",
     "azureSQLDBName": "[toLower(concat(parameters('deploymentPrefix'), 'arcgisdb'))]",
     "serverAvailablitySetName": "[concat(parameters('deploymentPrefix'), 'AvailabilitySet-Server')]",
     "serverVirtualMachineNames": "[split(parameters('serverVirtualMachineNames'),',')]",
-    "serverVirtualMachineImageSpecs": "[split(parameters('serverVirtualMachineImageSpecs'),',')]",
     "numberOfServerVirtualMachines": "[length(variables('serverVirtualMachineNames'))]",
     "portalAvailablitySetName": "[concat(parameters('deploymentPrefix'), 'AvailabilitySet-Portal')]",
     "portalVirtualMachineNames": "[split(parameters('portalVirtualMachineNames'),',')]",
-    "portalVirtualMachineImageSpecs": "[split(parameters('portalVirtualMachineImageSpecs'),',')]",
     "numberOfPortalVirtualMachines": "[length(variables('portalVirtualMachineNames'))]",
     "dataStoreAvailablitySetName": "[concat(parameters('deploymentPrefix'), 'AvailabilitySet-DataStore')]",
     "dataStoreVirtualMachineNames": "[split(parameters('dataStoreVirtualMachineNames'),',')]",
-    "dataStoreVirtualMachineImageSpecs": "[split(parameters('dataStoreVirtualMachineImageSpecs'),',')]",
     "numberOfDataStoreVirtualMachines": "[length(variables('dataStoreVirtualMachineNames'))]",
     "enableSpatiotemporalBigDataStore": "[contains(parameters('dataStoreTypes'),'SpatioTemporal')]",
     "spatiotemporalBigDataStoreAvailablitySetName": "[concat(parameters('deploymentPrefix'), 'AvailabilitySet-SpatiotemporalDataStore')]",
@@ -1315,28 +948,6 @@
       ]
     },
     "numberOfSpatiotemporalBigDataStoreVirtualMachines": "[length(variables('spatiotemporalBigDataStoreVirtualMachineNames'))]",
-    "spatiotemporalBigDataStoreVirtualMachineImageSpecs": "[split(parameters('spatiotemporalBigDataStoreVirtualMachineImageSpecs'),',')]",
-    "spatiotemporalBigDataStoreVirtualMachineImageSpecsOptions": {
-      "true": "[variables('spatiotemporalBigDataStoreVirtualMachineImageSpecs')]",
-      "false": [
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0"
-      ]
-    },
     "enableTileCacheDataStore": "[not(empty(parameters('tileCacheDataStoreVirtualMachineNames')))]",
     "tileCacheDataStoreAvailablitySetName": "[concat(parameters('deploymentPrefix'), 'AvailabilitySet-TileCacheDataStore')]",
     "tileCacheDataStoreVirtualMachineNames": "[split(parameters('tileCacheDataStoreVirtualMachineNames'),',')]",
@@ -1362,29 +973,6 @@
       ]
     },
     "numberOftileCacheDataStoreVirtualMachines": "[length(variables('tileCacheDataStoreVirtualMachineNames'))]",
-    "tileCacheDataStoreVirtualMachineImageSpecs": "[split(parameters('tileCacheDataStoreVirtualMachineImageSpecs'),',')]",
-    "tileCacheDataStoreVirtualMachineImageSpecsOptions": {
-      "true": "[variables('tileCacheDataStoreVirtualMachineImageSpecs')]",
-      "false": [
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0"
-      ]
-    },
-    "generateSSLCertsFileName": "GenerateSSLCerts.ps1",
     "frontendIPConfigurationsName": "[concat(parameters('deploymentPrefix'), 'EnterpriseAppGatewayFrontendIP')]",
     "publicIPFrontEndConfiguration": [
       {
@@ -1446,34 +1034,9 @@
     "portalRewriteRuleSetName": "[concat(parameters('deploymentPrefix'), 'PortalRewriteRuleSet')]",
     "serverBackendProbeName": "[concat(parameters('deploymentPrefix'), 'ServerProbeName')]",
     "portalBackendProbeName": "[concat(parameters('deploymentPrefix'), 'PortalProbeName')]",
-    "dscExtensionArchiveFileName": "DSC.zip",
-    "serverDscScriptFunction": "ServerConfiguration",
-    "portalDscScriptFunction": "PortalConfiguration",
-    "dataStoreDscScriptFunction": "DataStoreConfiguration",
-    "fileShareDscScriptFunction": "FileShareConfiguration",
-    "spatiotemporalBigDataStoreDscScriptFunction": "SpatiotemporalBigDataStoreConfiguration",
-    "tileCacheDataStoreDscScriptFunction": "TileCacheDataStoreConfiguration",
-    "dataStoreTypes": "[split(parameters('dataStoreTypes'),',')]",
-    "cloudStorageAccountCredentialsPassword": {
-      "false": "placeholder",
-      "true": "[parameters('cloudStorageAccountKey')]"
-    },
-    "cloudStorageAccountCredentialsUserName": {
-      "false": "placeholder",
-      "true": "[concat(parameters('cloudStorageAccountName'),variables('environmentToBlobEndpoint')[parameters('environment')])]"
-    },
-    "jumpBoxName": "[concat(parameters('deploymentPrefix'), 'JumpBox')]",
-    "jumpBoxNicName": "[concat(variables('jumpBoxName'),'-',variables('nicName'))]",
+    "jumpBoxNicName": "[concat(parameters('JumpBoxVirtualMachineName'),'-',variables('nicName'))]",
     "webAdaptorBoxName": "[concat(parameters('deploymentPrefix'), 'WebAdaptor')]",
     "webAdaptorNicName": "[concat(variables('webAdaptorBoxName'),'-',variables('nicName'))]",
-    "cloudStorageOption": {
-      "true": "[concat(substring(parameters('externalDnsHostName'), 0, indexOf(parameters('externalDnsHostName'),'.')), '@', parameters('cloudStorageAccountName'), variables('environmentToBlobEndpoint')[parameters('environment')], '@', parameters('cloudStorageAccountResourceGroupName'), '@',string(parameters('useAzureFiles')))]",
-      "false": ""
-    },
-    "omsWorkspace": {
-      "true": "[concat(parameters('omsWorkspaceName'), '@', parameters('omsWorkspaceResourceGroupName'), '@', string(parameters('enableServerLogHarvesterPlugin')))]",
-      "false": ""
-    },
     "omsWorkspaceResourceId": "[if(and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName')))), resourceId(parameters('omsWorkspaceResourceGroupName'), 'Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName')),'')]",
     "storageAccountName": "[toLower(parameters('StorageAccountName'))]",
     "storageAccountPrivateEndpointName": "[concat(variables('storageAccountName'), '-PE-01')]",
@@ -1496,7 +1059,8 @@
     "userAssignedManagedIdentityName": "[concat(parameters('deploymentPrefix'), '-UAMI-GIS-01')]",
     "userAssignedManagedIdentityID": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedManagedIdentityName'))]",
     "keyVaultName": "[concat(parameters('deploymentPrefix'), '-KEY-GIS-01')]",
-    "keyVaultPrivateEndpointName": "[concat(variables('keyVaultName'), '-PE-01')]"
+    "keyVaultPrivateEndpointName": "[concat(variables('keyVaultName'), '-PE-01')]",
+    "appGatewayName": "[concat(parameters('deploymentPrefix'), '-APPGW-GIS-01')]"
   },
   "resources": [
     {
@@ -1551,7 +1115,7 @@
     {
       "condition": "[and(not(empty(parameters('adminPassword'))),equals(string(parameters('enableRDPAccess')),'True'))]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('jumpBoxName')]",
+      "name": "[parameters('JumpBoxVirtualMachineName')]",
       "location": "[parameters('location')]",
       "apiVersion": "[variables('computeApiVersion')]",
       "tags": {
@@ -1567,7 +1131,7 @@
           "vmSize": "Standard_DS2_v2"
         },
         "osProfile": {
-          "computerName": "[variables('jumpBoxName')]",
+          "computerName": "[parameters('JumpBoxVirtualMachineName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "windowsConfiguration": {
@@ -1583,7 +1147,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat(variables('jumpBoxName'),'-','OsDisk')]",
+            "name": "[concat(parameters('JumpBoxVirtualMachineName'),'-','OSDisk')]",
             "managedDisk": {
               "storageAccountType": "[parameters('JumpBoxVirtualMachineOSDiskType')]"
             },
@@ -1606,10 +1170,10 @@
       "condition": "[and(equals(string(parameters('enableRDPAccess')),'True'),equals(string(parameters('enableAutoShutDown')),'True'))]",
       "apiVersion": "2018-09-15",
       "type": "Microsoft.DevTestLab/schedules",
-      "name": "[concat('shutdown-computevm-', variables('jumpBoxName'))]",
+      "name": "[concat('shutdown-computevm-', parameters('JumpBoxVirtualMachineName'))]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[variables('jumpBoxName')]"
+        "[parameters('JumpBoxVirtualMachineName')]"
       ],
       "properties": {
         "status": "Enabled",
@@ -1620,7 +1184,7 @@
           "timeInMinutes": 15,
           "webhookUrl": ""
         },
-        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('jumpBoxName'))]",
+        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', parameters('JumpBoxVirtualMachineName'))]",
         "dailyRecurrence": {
           "time": "[parameters('autoShutDownTime')]"
         }
@@ -1684,7 +1248,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat(variables('webAdaptorBoxName'),'-','OsDisk')]",
+            "name": "[concat(variables('webAdaptorBoxName'),'-','OSDisk')]",
             "managedDisk": {
               "storageAccountType": "[parameters('WebAdaptorVirtualMachineOSDiskType')]"
             },
@@ -1698,7 +1262,7 @@
               "lun": 0,
               "createOption": "Empty",
               "name": "[concat(variables('webAdaptorBoxName'),'-','DataDisk-01')]",
-              "managdDisk": {
+              "managedDisk": {
                 "storageAccountType": "[parameters('WebAdaptorVirtualMachineDataDiskType')]"
               }
             }
@@ -1742,10 +1306,10 @@
       "condition": "[and(equals(string(parameters('enableRDPAccess')),'True'),equals(string(parameters('joinWindowsDomain')),'True'))]",
       "apiVersion": "[variables('computeApiVersion')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('jumpBoxName'),'/JoinDomain')]",
+      "name": "[concat(parameters('JumpBoxVirtualMachineName'),'/JoinDomain')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[variables('jumpBoxName')]"
+        "[parameters('JumpBoxVirtualMachineName')]"
       ],
       "tags": {
         "displayName": "(Optional) Jumpbox Domain Join"
@@ -1868,7 +1432,7 @@
               "lun": 0,
               "createOption": "Empty",
               "name": "[concat(variables('serverVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
-              "managdDisk": {
+              "managedDisk": {
                 "storageAccountType": "[parameters('serverVirtualMachineDataDiskType')]"
               }
             }
@@ -2046,7 +1610,7 @@
               "lun": 0,
               "createOption": "Empty",
               "name": "[concat(variables('portalVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
-              "managdDisk": {
+              "managedDisk": {
                 "storageAccountType": "[parameters('portalVirtualMachineDataDiskType')]"
               }
             }
@@ -2224,7 +1788,7 @@
               "lun": 0,
               "createOption": "Empty",
               "name": "[concat(variables('dataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
-              "managdDisk": {
+              "managedDisk": {
                 "storageAccountType": "[parameters('dataStoreVirtualMachineDataDiskType')]"
               }
             }
@@ -2328,7 +1892,7 @@
     {
       "type": "Microsoft.Network/applicationGateways",
       "apiVersion": "2019-04-01",
-      "name": "[parameters('appGatewayName')]",
+      "name": "[variables('appGatewayName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedManagedIdentityName'))]",
@@ -2426,11 +1990,11 @@
               "path": "/arcgis/",
               "requestTimeout": 180,
               "probe": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/probes/', variables('portalBackendProbeName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/probes/', variables('portalBackendProbeName'))]"
               },
               "trustedRootCertificates": [
                 {
-                  "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/trustedRootCertificates/TrustedRootCertificate01')]"
+                  "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/trustedRootCertificates/TrustedRootCertificate01')]"
                 }
               ]
             }
@@ -2449,11 +2013,11 @@
               "path": "/arcgis/",
               "requestTimeout": 180,
               "probe": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/probes/', variables('serverBackendProbeName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/probes/', variables('serverBackendProbeName'))]"
               },
               "trustedRootCertificates": [
                 {
-                  "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/trustedRootCertificates/TrustedRootCertificate01')]"
+                  "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/trustedRootCertificates/TrustedRootCertificate01')]"
                 }
               ]
             }
@@ -2500,10 +2064,10 @@
             "name": "[variables('httpDeploymentListnerName')]",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/frontendIPConfigurations/',variables('frontendIPConfigurationsName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/frontendIPConfigurations/',variables('frontendIPConfigurationsName'))]"
               },
               "frontendPort": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/frontendPorts/',variables('frontendport80Name'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/frontendPorts/',variables('frontendport80Name'))]"
               },
               "protocol": "Http",
               "hostName": "[parameters('externalDnsHostName')]",
@@ -2514,14 +2078,14 @@
             "name": "[variables('httpsDeploymentListnerName')]",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/frontendIPConfigurations/',variables('frontendIPConfigurationsName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/frontendIPConfigurations/',variables('frontendIPConfigurationsName'))]"
               },
               "frontendPort": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/frontendPorts/',variables('frontendport443Name'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/frontendPorts/',variables('frontendport443Name'))]"
               },
               "protocol": "Https",
               "sslCertificate": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/sslCertificates/frontendCert')]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/sslCertificates/frontendCert')]"
               },
               "hostName": "[parameters('externalDnsHostName')]",
               "requireServerNameIndication": false
@@ -2533,10 +2097,10 @@
             "name": "[variables('urlPathMapsName')]",
             "properties": {
               "defaultBackendAddressPool": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendAddressPools/',variables('serverBackendPoolName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/backendAddressPools/',variables('serverBackendPoolName'))]"
               },
               "defaultBackendHttpSettings": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendHttpSettingsCollection/',variables('serverBackendHttpsSettingName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/backendHttpSettingsCollection/',variables('serverBackendHttpsSettingName'))]"
               },
               "pathRules": [
                 {
@@ -2546,13 +2110,13 @@
                       "[concat('/', parameters('serverContext'), '/*')]"
                     ],
                     "backendAddressPool": {
-                      "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendAddressPools/',variables('serverBackendPoolName'))]"
+                      "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/backendAddressPools/',variables('serverBackendPoolName'))]"
                     },
                     "backendHttpSettings": {
-                      "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendHttpSettingsCollection/', variables('serverBackendHttpsSettingName'))]"
+                      "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/backendHttpSettingsCollection/', variables('serverBackendHttpsSettingName'))]"
                     },
                     "rewriteRuleSet": {
-                      "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/rewriteRuleSets/',variables('serverRewriteRuleSetName'))]"
+                      "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/rewriteRuleSets/',variables('serverRewriteRuleSetName'))]"
                     }
                   }
                 },
@@ -2564,13 +2128,13 @@
                       "[concat('/', parameters('portalContext'))]"
                     ],
                     "backendAddressPool": {
-                      "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendAddressPools/',variables('portalBackendPoolName'))]"
+                      "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/backendAddressPools/',variables('portalBackendPoolName'))]"
                     },
                     "backendHttpSettings": {
-                      "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/backendHttpSettingsCollection/', variables('portalBackendHttpsSettingName'))]"
+                      "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/backendHttpSettingsCollection/', variables('portalBackendHttpsSettingName'))]"
                     },
                     "rewriteRuleSet": {
-                      "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/rewriteRuleSets/',variables('portalRewriteRuleSetName'))]"
+                      "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/rewriteRuleSets/',variables('portalRewriteRuleSetName'))]"
                     }
                   }
                 }
@@ -2584,13 +2148,13 @@
             "properties": {
               "redirectType": "Permanent",
               "targetListener": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/httpListeners/',variables('httpsDeploymentListnerName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/httpListeners/',variables('httpsDeploymentListnerName'))]"
               },
               "includePath": true,
               "includeQueryString": true,
               "requestRoutingRules": [
                 {
-                  "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/requestRoutingRules/',variables('httpToHttpsRequestRoutingRule'))]"
+                  "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/requestRoutingRules/',variables('httpToHttpsRequestRoutingRule'))]"
                 }
               ]
             }
@@ -2602,10 +2166,10 @@
             "properties": {
               "RuleType": "PathBasedRouting",
               "httpListener": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/httpListeners/',variables('httpsDeploymentListnerName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/httpListeners/',variables('httpsDeploymentListnerName'))]"
               },
               "urlPathMap": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/urlPathMaps/',variables('urlPathMapsName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/urlPathMaps/',variables('urlPathMapsName'))]"
               }
             }
           },
@@ -2614,10 +2178,10 @@
             "properties": {
               "ruleType": "Basic",
               "httpListener": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/httpListeners/',variables('httpDeploymentListnerName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/httpListeners/',variables('httpDeploymentListnerName'))]"
               },
               "redirectConfiguration": {
-                "id": "[concat(resourceId(parameters('appGatewayResourceGroupName'),'Microsoft.Network/applicationGateways', parameters('appGatewayName')), '/redirectConfigurations/',variables('redirectConfigurationName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/redirectConfigurations/',variables('redirectConfigurationName'))]"
               }
             }
           }
@@ -2899,11 +2463,11 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName'))))]",
-      "name": "[concat(variables('jumpBoxName'),'/LogAnalytics')]",
+      "name": "[concat(parameters('JumpBoxVirtualMachineName'),'/LogAnalytics')]",
       "apiVersion": "2015-05-01-preview",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('jumpBoxName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('JumpBoxVirtualMachineName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
@@ -3136,7 +2700,7 @@
         "accessTier": "Hot",
         "enabledProtocols": "SMB",
         "metadata": {},
-        "shareQuota": "5"
+        "shareQuota": 5
       }
     },
     {
@@ -3229,7 +2793,8 @@
         "name": "Standard",
         "tier": "Standard"
       },
-      "kind": "v12.0,user"
+      "kind": "v12.0,user",
+      "properties": {}
     },
     {
       "type": "Microsoft.Network/privateEndpoints",
@@ -3382,7 +2947,7 @@
               "lun": 0,
               "createOption": "Empty",
               "name": "[concat(variables('tileCacheDataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
-              "managdDisk": {
+              "managedDisk": {
                 "storageAccountType": "[parameters('tileCacheDataStoreVirtualMachineDataDiskType')]"
               }
             }
@@ -3587,7 +3152,7 @@
               "lun": 0,
               "createOption": "Empty",
               "name": "[concat(variables('spatiotemporalBigDataStoreVirtualMachineNames')[copyIndex()],'-','DataDisk-01')]",
-              "managdDisk": {
+              "managedDisk": {
                 "storageAccountType": "[parameters('spatiotemporalBigDataStoreVirtualMachineDataDiskType')]"
               }
             }
