@@ -832,6 +832,12 @@
         "description": "Managed Disk Type for the Operating System (c Drive) Disk for the Web Adaptor of Virtual Machines"
       }
     },
+    "WebAdaptorVirtualMachineName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Machine name for the Web Adaptor Tier"
+      }
+    },
     "WebAdaptorVirtualMachineOSDiskSize": {
       "type": "int",
       "defaultValue": 128,
@@ -1035,8 +1041,7 @@
     "serverBackendProbeName": "[concat(parameters('deploymentPrefix'), 'ServerProbeName')]",
     "portalBackendProbeName": "[concat(parameters('deploymentPrefix'), 'PortalProbeName')]",
     "jumpBoxNicName": "[concat(parameters('JumpBoxVirtualMachineName'),'-',variables('nicName'))]",
-    "webAdaptorBoxName": "[concat(parameters('deploymentPrefix'), 'WebAdaptor')]",
-    "webAdaptorNicName": "[concat(variables('webAdaptorBoxName'),'-',variables('nicName'))]",
+    "webAdaptorNicName": "[concat(parameters('WebAdaptorVirtualMachineName'),'-',variables('nicName'))]",
     "omsWorkspaceResourceId": "[if(and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName')))), resourceId(parameters('omsWorkspaceResourceGroupName'), 'Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName')),'')]",
     "storageAccountName": "[toLower(parameters('StorageAccountName'))]",
     "storageAccountPrivateEndpointName": "[concat(variables('storageAccountName'), '-PE-01')]",
@@ -1216,7 +1221,7 @@
     {
       "condition": "[and(not(empty(parameters('adminPassword'))),equals(string(parameters('enableRDPAccess')),'True'))]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('webAdaptorBoxName')]",
+      "name": "[parameters('WebAdaptorVirtualMachineName')]",
       "location": "[parameters('location')]",
       "apiVersion": "[variables('computeApiVersion')]",
       "tags": {
@@ -1232,7 +1237,7 @@
           "vmSize": "Standard_DS2_v2"
         },
         "osProfile": {
-          "computerName": "[variables('webAdaptorBoxName')]",
+          "computerName": "[parameters('WebAdaptorVirtualMachineName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "windowsConfiguration": {
@@ -1248,7 +1253,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat(variables('webAdaptorBoxName'),'-','OSDisk')]",
+            "name": "[concat(parameters('WebAdaptorVirtualMachineName'),'-','OSDisk')]",
             "managedDisk": {
               "storageAccountType": "[parameters('WebAdaptorVirtualMachineOSDiskType')]"
             },
@@ -1261,7 +1266,7 @@
               "diskSizeGB": "[parameters('WebAdaptorVirtualMachineDataDiskSize')]",
               "lun": 0,
               "createOption": "Empty",
-              "name": "[concat(variables('webAdaptorBoxName'),'-','DataDisk-01')]",
+              "name": "[concat(parameters('WebAdaptorVirtualMachineName'),'-','DataDisk-01')]",
               "managedDisk": {
                 "storageAccountType": "[parameters('WebAdaptorVirtualMachineDataDiskType')]"
               }
@@ -1282,10 +1287,10 @@
       "condition": "[equals(string(parameters('enableAutoShutDown')),'True')]",
       "apiVersion": "2018-09-15",
       "type": "Microsoft.DevTestLab/schedules",
-      "name": "[concat('shutdown-computevm-', variables('webAdaptorBoxName'))]",
+      "name": "[concat('shutdown-computevm-', parameters('WebAdaptorVirtualMachineName'))]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[variables('webAdaptorBoxName')]"
+        "[parameters('WebAdaptorVirtualMachineName')]"
       ],
       "properties": {
         "status": "Enabled",
@@ -1296,7 +1301,7 @@
           "timeInMinutes": 15,
           "webhookUrl": ""
         },
-        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', variables('webAdaptorBoxName'))]",
+        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines/', parameters('WebAdaptorVirtualMachineName'))]",
         "dailyRecurrence": {
           "time": "[parameters('autoShutDownTime')]"
         }
@@ -2485,11 +2490,11 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName'))))]",
-      "name": "[concat(variables('webAdaptorBoxName'),'/LogAnalytics')]",
+      "name": "[concat(parameters('WebAdaptorVirtualMachineName'),'/LogAnalytics')]",
       "apiVersion": "2015-05-01-preview",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('webAdaptorBoxName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('WebAdaptorVirtualMachineName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",

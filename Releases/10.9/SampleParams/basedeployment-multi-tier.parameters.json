@@ -260,6 +260,9 @@
         "WebAdaptorVirtualMachineDataDiskType": {
             "value": "Premium_LRS"
         },
+        "WebAdaptorVirtualMachineName": {
+            "value": ""
+        },
         "WebAdaptorVirtualMachineOSDiskSize": {
             "value": 128
         },
