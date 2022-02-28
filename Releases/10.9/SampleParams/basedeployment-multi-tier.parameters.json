@@ -1,268 +1,282 @@
 {
-  "#schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "location": {
-      "value": "eastus"
-    },
-    "environment": {
-      "value": "AzureCloud"
-    },
-    "deploymentPrefix": {
-      "value": "bm"
-    },
-    "usesPrivateIP":{
-      "value": false
-    },
-    "deployPublicIPWhenUsingPrivateIP":{
-      "value": true
-    },
-    "usesExistingPublicIP":{
-      "value": false
-    },
-    "existingPublicIPResourceGroupName":{
-      "value": "[If usesExistingPublicIP is false, not required. Else Resource Group name of an existing public ip]"
-    },
-    "existingPublicIPName":{
-      "value": "[If usesExistingPublicIP is false, not required. Else name of an existing public ip]"
-    },
-    "dnsPrefixForPublicIpAddress": {
-      "value": "bmm"
-    },
-    "externalDnsHostName": {
-      "value": "[TODO - Example (If using Self Signed Certificate) - bmm.eastus.cloudapp.azure.com ]"
-    },
-    "sslCertificateFileName":{
-      "value": "[TODO - wildcard.eastus.cloudapp.azure.com.pfx]"
-    },
-    "sslCertificateData": {
-      "value": "[Auto-Generated from the SSL Certificate specified in 'sslCertificateFileName' param]"
-    },
-    "sslCertificatePassword": {
-      "value":"[TODO - *.eastus.cloudapp.azure.com if using self signed certificate, replace 'eastus' value of location]"
-    },
-    "selfSignedSSLCertificatePassword": {
-      "value":"[TODO - externalDNSName if using self signed certificate]"
-    },
-    "virtualNetworkResourceGroupName": {
-      "value": "[TODO - Resource Group in which the created Virtual Networks is present]"
-    },
-    "existingVirtualNetworkName": {
-      "value": "[TODO - Existing Virtual Network Name]"
-    },
-    "subnetName": {
-      "value": "[TODO - Existing Virtual Network Subnet]"
-    },
-    "appGatewaySubnetName": {
-      "value": "[TODO - Existing Virtual Network Empty Application Gateway Subnet]"
-    },
-    "appGatewayName": {
-      "value": "bmAppGateway"
-    },
-    "appGatewayResourceGroupName": {
-      "value": "[TODO - Resource Group specified in deployArcGIS.sh. Base Deployment will be created in this Resource Group.]"
-    },
-    "imageReferences": {
-      "value": {
-        "0": {
-          "Publisher": "esri",
-          "Offer": "arcgis-enterprise",
-          "SKU": "byol-109",
-          "UseManagedDiskImage": false
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminPassword": {
+            "value": ""
+        },
+        "adminUsername": {
+            "value": ""
+        },
+        "appGatewayPrivateIP": {
+            "value": ""
+        },
+        "appGatewayPrivateIPSubnet": {
+            "value": ""
+        },
+        "appGatewaySubnetName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "arcgisDeploymentId": {
+            "value": ""
+        },
+        "autoShutDownTime": {
+            "value": ""
+        },
+        "AzureSQLAADAdministratorLoginName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "AzureSQLAADAdministratorObjectID": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "AzureSQLAADAdministratorType": {
+            "value": "Group"
+        },
+        "AzureSQLServerAdministratorName": {
+            "value": "arcgisdba"
+        },
+        "AzureSQLServerAdministratorPassword": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "AzureSQLServerSubnetName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "dataStoreTypes": {
+            "value": "Relational"
+        },
+        "dataStoreVirtualMachineDataDiskSize": {
+            "value": 32
+        },
+        "dataStoreVirtualMachineDataDiskType": {
+            "value": "Premium_LRS"
+        },
+        "dataStoreVirtualMachineNames": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "dataStoreVirtualMachineOSDiskSize": {
+            "value": 128
+        },
+        "dataStoreVirtualMachineOSDiskType": {
+            "value": "Premium_LRS"
+        },
+        "dataStoreVirtualMachineSize": {
+            "value": "Standard_DS3_v2"
+        },
+        "deploymentPrefix": {
+            "value": ""
+        },
+        "deploymentTrackingID": {
+            "value": "01702208-6a87-494b-9f6c-5e6be4bea47b"
+        },
+        "deployPublicIPWhenUsingPrivateIP": {
+            "value": true
+        },
+        "dnsPrefixForPublicIpAddress": {
+            "value": ""
+        },
+        "enableAutomaticUpdates": {
+            "value": false
+        },
+        "enableAutoShutDown": {
+            "value": false
+        },
+        "enableRDPAccess": {
+            "value": false
+        },
+        "existingPublicIPName": {
+            "value": ""
+        },
+        "existingPublicIPResourceGroupName": {
+            "value": ""
+        },
+        "existingVirtualNetworkName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "externalDnsHostName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "fileShareName": {
+            "value": "fileshare"
+        },
+        "GISDatastoreRelationalVMAvailabilityZone": {
+            "value": 1
+        },
+        "GISDatastoreSpatiotemporalVMAvailabilityZone": {
+            "value": 1
+        },
+        "GISDatastoreTileCacheAvailabilityZone": {
+            "value": 1
+        },
+        "GISPortalVMAvailabilityZone": {
+            "value": 1
+        },
+        "GISServerVMAvailabilityZone": {
+            "value": 1
+        },
+        "GISSubnetName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "joinWindowsDomain": {
+            "value": false
+        },
+        "JumpBoxSubnetName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "JumpBoxVirtualMachineName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "JumpBoxVirtualMachineOSDiskSize": {
+            "value": 128
+        },
+        "JumpBoxVirtualMachineOSDiskType": {
+            "value": "Premium_LRS"
+        },
+        "location": {
+            "value": "westus3"
+        },
+        "omsWorkspaceName": {
+            "value": ""
+        },
+        "omsWorkspaceResourceGroupName": {
+            "value": ""
+        },
+        "OSImageSKU": {
+            "value": "2022-datacenter-azure-edition"
+        },
+        "portalContext": {
+            "value": "portal"
+        },
+        "portalVirtualMachineDataDiskSize": {
+            "value": 32
+        },
+        "portalVirtualMachineDataDiskType": {
+            "value": "Premium_LRS"
+        },
+        "portalVirtualMachineNames": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "portalVirtualMachineOSDiskSize": {
+            "value": 128
+        },
+        "portalVirtualMachineOSDiskType": {
+            "value": "Premium_LRS"
+        },
+        "portalVirtualMachineSize": {
+            "value": "Standard_DS3_v2"
+        },
+        "RDPVMAvailabilityZone": {
+            "value": 1
+        },
+        "serverContext": {
+            "value": "server"
+        },
+        "serverVirtualMachineDataDiskSize": {
+            "value": 32
+        },
+        "serverVirtualMachineDataDiskType": {
+            "value": "Premium_LRS"
+        },
+        "serverVirtualMachineNames": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "serverVirtualMachineOSDiskSize": {
+            "value": 128
+        },
+        "serverVirtualMachineOSDiskType": {
+            "value": "Premium_LRS"
+        },
+        "serverVirtualMachineSize": {
+            "value": "Standard_DS3_v2"
+        },
+        "spatiotemporalBigDataStoreVirtualMachineDataDiskSize": {
+            "value": 32
+        },
+        "spatiotemporalBigDataStoreVirtualMachineDataDiskType": {
+            "value": "Premium_LRS"
+        },
+        "spatiotemporalBigdataStoreVirtualMachineNames": {
+            "value": ""
+        },
+        "spatiotemporalBigDataStoreVirtualMachineOSDiskSize": {
+            "value": 128
+        },
+        "spatiotemporalBigDataStoreVirtualMachineOSDiskType": {
+            "value": "Premium_LRS"
+        },
+        "spatiotemporalBigDataStoreVirtualMachineSize": {
+            "value": "Standard_DS3_v2"
+        },
+        "sslCertificateData": {
+            "value": ""
+        },
+        "sslCertificatePassword": {
+            "value": ""
+        },
+        "StorageAccountName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "StorageAccountSubnetName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "tileCacheDataStoreVirtualMachineDataDiskSize": {
+            "value": 32
+        },
+        "tileCacheDataStoreVirtualMachineDataDiskType": {
+            "value": "Premium_LRS"
+        },
+        "tileCacheDataStoreVirtualMachineNames": {
+            "value": ""
+        },
+        "tileCacheDataStoreVirtualMachineOSDiskSize": {
+            "value": 128
+        },
+        "tileCacheDataStoreVirtualMachineOSDiskType": {
+            "value": "Premium_LRS"
+        },
+        "tileCacheDataStoreVirtualMachineSize": {
+            "value": "Standard_DS3_v2"
+        },
+        "timeZoneId": {
+            "value": ""
+        },
+        "TrustedRootCertificateData": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "usesExistingPublicIP": {
+            "value": false
+        },
+        "usesPrivateIP": {
+            "value": false
+        },
+        "virtualNetworkResourceGroupName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "WebAdaptorSubnetName": {
+            "value": "## TO BE DEFINED ##"
+        },
+        "WebAdaptorVirtualMachineDataDiskSize": {
+            "value": 32
+        },
+        "WebAdaptorVirtualMachineDataDiskType": {
+            "value": "Premium_LRS"
+        },
+        "WebAdaptorVirtualMachineOSDiskSize": {
+            "value": 128
+        },
+        "WebAdaptorVirtualMachineOSDiskType": {
+            "value": "Premium_LRS"
+        },
+        "WebAdaptorVMAvailabilityZone": {
+            "value": 1
+        },
+        "windowsDomainAdministratorPassword": {
+            "value": ""
+        },
+        "windowsDomainAdministratorUserName": {
+            "value": ""
+        },
+        "windowsDomainName": {
+            "value": ""
         }
-      }
-    },
-    "adminUsername": {
-      "value": "[TODO - Machine Administrator Account]"
-    },
-    "adminPassword": {
-      "value": "[TODO]"
-    },
-    "fileShareVirtualMachineName": {
-      "value": "bmFileShare"
-    },
-    "fileShareVirtualMachineSize": {
-      "value": "Standard_DS3_v2"
-    },
-    "fileShareVirtualMachineOSDiskType": {
-      "value": "Premium_LRS"
-    },
-    "fileShareVirtualMachineOsDiskSize": {
-      "value": 128
-    },
-    "serverVirtualMachineNames": {
-      "value": "bmServer-0,bmServer-1"
-    },
-    "serverVirtualMachineImageSpecs": {
-      "value": "0,0"
-    },
-    "serverVirtualMachineSize": {
-      "value": "Standard_DS3_v2"
-    },
-    "serverVirtualMachineOSDiskType": {
-      "value": "Premium_LRS"
-    },
-    "serverVirtualMachineOsDiskSize": {
-      "value": 128
-    },
-    "portalVirtualMachineNames": {
-      "value": "bmPortal-Pri,bmPortal-Sec"
-    },
-    "portalVirtualMachineImageSpecs": {
-      "value": "0,0"
-    },
-    "portalVirtualMachineSize": {
-      "value": "Standard_DS3_v2"
-    },
-    "portalVirtualMachineOSDiskType": {
-      "value": "Premium_LRS"
-    },
-    "portalVirtualMachineOsDiskSize": {
-      "value": 128
-    },
-    "dataStoreVirtualMachineNames": {
-      "value":  "bmDataStr-Pri,bmDataStr-Sby"
-    },
-    "dataStoreVirtualMachineImageSpecs": {
-      "value": "0,0"
-    },
-    "dataStoreVirtualMachineSize": {
-      "value": "Standard_DS3_v2"
-    },
-    "dataStoreVirtualMachineOSDiskType": {
-      "value": "Premium_LRS"
-    },
-    "dataStoreVirtualMachineOsDiskSize": {
-      "value": 128
-    },
-    "tileCacheDataStoreVirtualMachineNames": {
-      "value":  "bmTileCache-0,bmTileCache-1"
-    },
-    "tileCacheDataStoreVirtualMachineImageSpecs": {
-      "value": "0,0"
-    },
-    "tileCacheDataStoreVirtualMachineSize": {
-      "value": "Standard_DS3_v2"
-    },
-    "tileCacheDataStoreVirtualMachineOSDiskType": {
-      "value": "Premium_LRS"
-    },
-    "tileCacheDataStoreVirtualMachineOsDiskSize": {
-      "value": 128
-    },
-    "spatiotemporalBigdataStoreVirtualMachineNames": {
-      "value":  "bmSpatio-0,bmSpatio-1,bmSpatio-2"
-    },
-    "spatiotemporalBigDataStoreVirtualMachineImageSpecs": {
-      "value": "0,0,0"
-    },
-    "spatiotemporalBigDataStoreVirtualMachineSize": {
-      "value": "Standard_DS3_v2"
-    },
-    "spatiotemporalBigDataStoreVirtualMachineOSDiskSize": {
-      "value": 128
-    },
-    "spatiotemporalBigDataStoreVirtualMachineOSDiskType": {
-      "value": "Premium_LRS"
-    },
-    "timeZoneId": {
-      "value": "Pacific Standard Time"
-    },
-    "enableAutomaticUpdates": {
-      "value": false
-    },
-    "joinWindowsDomain": {
-      "value": false
-    },
-    "windowsDomainName": {
-      "value": ""
-    },
-    "windowsDomainAdministratorUserName": {
-      "value": ""
-    },
-    "windowsDomainAdministratorPassword": {
-      "value": ""
-    },
-    "omsWorkspaceName": {
-      "value": ""
-    },
-    "omsWorkspaceResourceGroupName": {
-      "value": ""
-    },
-    "serverContext":{
-      "value": "server"
-    },
-    "portalContext":{
-      "value": "portal"
-    },
-    "arcgisServiceAccountUserName": {
-      "value": "arcgis"
-    },
-    "arcgisServiceAccountIsDomainAccount": {
-      "value": false
-    },
-    "arcgisServiceAccountPassword": {
-      "value": "[TODO]"
-    },
-    "primarySiteAdministratorAccountUserName": {
-      "value": "[TODO]"
-    },
-    "primarySiteAdministratorAccountPassword": {
-      "value": "[TODO]"
-    },
-    "serverLicenseFileName": {
-      "value": "[TODO - server.ecp]"
-    },
-    "portalLicenseFileName": {
-      "value": "[TODO - portal.json]"
-    },
-    "portalLicenseUserTypeId": {
-      "value": "[TODO - creatorUT]"
-    },
-    "dataStoreTypes": {
-      "value": "Relational,TileCache,SpatioTemporal"
-    },
-    "isMultiMachineTileCacheDataStore":{
-      "value":  true
-    },
-    "isTileCacheDataStoreClustered":{
-      "value":  false
-    },
-    "useCloudStorage": {
-      "value": false      
-    },
-    "useAzureFiles": {
-      "value": false
-    },
-    "fileShareName": {
-      "value": "fileshare"
-    },
-    "cloudStorageAccountName": {
-      "value": ""
-    },
-    "cloudStorageAccountResourceGroupName": {
-      "value": ""
-    },
-    "cloudStorageAccountKey": {
-      "value": ""
-    },
-    "enableServerLogHarvesterPlugin":{
-      "value": false
-    },
-    "debugMode": {
-      "value": false
-    },
-    "enableRDPAccess":{
-      "value": true
-    },
-    "enableAutoShutDown":{
-      "value": true
-    },
-    "autoShutDownTime":{
-      "value": "0000"
-    },
-    "arcgisDeploymentVersion": {
-      "value": "10.9"
-    }    
-  }
+    }
 }
