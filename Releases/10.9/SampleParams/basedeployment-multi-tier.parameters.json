@@ -23,23 +23,35 @@
         "autoShutDownTime": {
             "value": ""
         },
-        "AzureSQLAADAdministratorLoginName": {
+        "AzureSQLMIAADAdministratorLoginName": {
             "value": "## TO BE DEFINED ##"
         },
-        "AzureSQLAADAdministratorObjectID": {
+        "AzureSQLMIAADAdministratorObjectID": {
             "value": "## TO BE DEFINED ##"
         },
-        "AzureSQLAADAdministratorType": {
+        "AzureSQLMIAADAdministratorType": {
             "value": "Group"
         },
-        "AzureSQLServerAdministratorName": {
+        "AzureSQLMIAdministratorName": {
             "value": "arcgisdba"
         },
-        "AzureSQLServerAdministratorPassword": {
+        "AzureSQLMIAdministratorPassword": {
             "value": "## TO BE DEFINED ##"
         },
-        "AzureSQLServerSubnetName": {
+        "AzureSQLMISubnetName": {
             "value": "## TO BE DEFINED ##"
+        },
+        "AzureSQLMISKUName": {
+            "value": "GP_Gen5"
+        },
+        "AzureSQLMIvCores": {
+            "value": 8
+        },
+        "AzureSQLMIStorageSize": {
+            "value": 256
+        },
+        "AzureSQLMILicenseType": {
+            "value": "LicenseIncluded"
         },
         "dataStoreTypes": {
             "value": "Relational"
@@ -63,7 +75,10 @@
             "value": "Standard_DS3_v2"
         },
         "deploymentPrefix": {
-            "value": ""
+            "value": "## TO BE DEFINED ##"
+        },
+        "BaseSequenceNumber": {
+            "value": 1
         },
         "deploymentTrackingID": {
             "value": "01702208-6a87-494b-9f6c-5e6be4bea47b"
@@ -132,7 +147,7 @@
             "value": "Premium_LRS"
         },
         "location": {
-            "value": "westus3"
+            "value": "eastus"
         },
         "omsWorkspaceName": {
             "value": ""
@@ -261,7 +276,7 @@
             "value": "Premium_LRS"
         },
         "WebAdaptorVirtualMachineName": {
-            "value": ""
+            "value": "## TO BE DEFINED ##"
         },
         "WebAdaptorVirtualMachineOSDiskSize": {
             "value": 128
