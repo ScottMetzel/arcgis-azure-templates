@@ -1277,7 +1277,7 @@
       }
     },
     {
-      "condition": "[and(not(empty(parameters('adminPassword'))),equals(string(parameters('enableRDPAccess')),'True'))]",
+      "condition": "[not(empty(parameters('adminPassword')))]",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('WebAdaptorVirtualMachineName')]",
       "location": "[parameters('location')]",
