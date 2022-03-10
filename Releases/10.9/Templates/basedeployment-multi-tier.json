@@ -52,19 +52,19 @@
         "description": "(Optional) Auto Shut down time in hh:ss format."
       }
     },
-    "AzureSQLAADAdministratorLoginName": {
+    "AzureSQLMIAADAdministratorLoginName": {
       "type": "string",
       "metadata": {
         "description": "The login name of the Azure AD application, user, or group, to use as the AAD Administrator for the Azure SQL Server"
       }
     },
-    "AzureSQLAADAdministratorObjectID": {
+    "AzureSQLMIAADAdministratorObjectID": {
       "type": "string",
       "metadata": {
         "description": "The object ID of the Azure AD application, user, or group, to use as the AAD Administrator for the Azure SQL Server"
       }
     },
-    "AzureSQLAADAdministratorType": {
+    "AzureSQLMIAADAdministratorType": {
       "type": "string",
       "defaultValue": "Group",
       "allowedValues": [
@@ -76,23 +76,70 @@
         "description": "The type of Azure AD Administrator to add - a, application, user, or group."
       }
     },
-    "AzureSQLServerAdministratorName": {
+    "AzureSQLMIAdministratorName": {
       "type": "string",
       "defaultValue": "arcgisdba",
       "metadata": {
         "description": "The username of the local administrator for the Azure SQL Server"
       }
     },
-    "AzureSQLServerAdministratorPassword": {
+    "AzureSQLMIAdministratorPassword": {
       "type": "securestring",
       "metadata": {
         "description": "The password of the local administrator for the Azure SQL Server"
       }
     },
-    "AzureSQLServerSubnetName": {
+    "AzureSQLMISubnetName": {
       "type": "string",
       "metadata": {
         "description": "Name of the existing Subnet within the Virtual Network specified with the 'existingVirtualNetworkName' parameter"
+      }
+    },
+    "AzureSQLMISKUName": {
+      "type": "string",
+      "defaultValue": "GP_Gen5",
+      "allowedValues": [
+        "GP_Gen5",
+        "BC_Gen5"
+      ],
+      "metadata": {
+        "description": "Enter sku name."
+      }
+    },
+    "AzureSQLMIvCores": {
+      "type": "int",
+      "defaultValue": 8,
+      "allowedValues": [
+        8,
+        16,
+        24,
+        32,
+        40,
+        64,
+        80
+      ],
+      "metadata": {
+        "description": "Enter number of vCores."
+      }
+    },
+    "AzureSQLMIStorageSize": {
+      "type": "int",
+      "defaultValue": 256,
+      "maxValue": 8192,
+      "minValue": 32,
+      "metadata": {
+        "description": "Enter storage size."
+      }
+    },
+    "AzureSQLMILicenseType": {
+      "type": "string",
+      "defaultValue": "LicenseIncluded",
+      "allowedValues": [
+        "BasePrice",
+        "LicenseIncluded"
+      ],
+      "metadata": {
+        "description": "Enter license type."
       }
     },
     "dataStoreTypes": {
@@ -182,11 +229,19 @@
     },
     "deploymentPrefix": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
-        "description": "(Optional) Prefix applied to all resources provisioned as part of this template"
+        "description": "Prefix applied to all resources provisioned as part of this template"
       },
       "maxLength": 3
+    },
+    "BaseSequenceNumber": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 999,
+      "metadata": {
+        "description": "The base sequence number for all resources to create."
+      }
     },
     "deploymentTrackingID": {
       "type": "string",
@@ -903,6 +958,9 @@
   },
   "variables": {
     "deploymentId": "[if(empty(parameters('arcgisDeploymentId')),uniqueString(resourceGroup().id, concat(parameters('serverContext'), parameters('location')), parameters('externalDnsHostName')),parameters('arcgisDeploymentId'))]",
+    "baseSequenceNumberFormatted": "[format('{0:00}', parameters('BaseSequenceNumber'))]",
+    "baseSequenceNumberOffsetted": "[add(parameters('BaseSequenceNumber'), 1)]",
+    "baseSequenceNumberOffsettedFormatted": "[format('{0:00}', variables('baseSequenceNumberOffsetted'))]",
     "computeApiVersion": "2018-06-01",
     "networkApiVersion": "2018-08-01",
     "publicIPAddressResourceName": "[if(parameters('usesExistingPublicIP'), parameters('existingPublicIPName'), concat(parameters('deploymentPrefix'), 'PublicIP'))]",
@@ -915,11 +973,9 @@
     "jumpbBoxSubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('JumpBoxSubnetName'))]",
     "appGatewaySubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('appGatewaySubnetName'))]",
     "storageAccountSubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('StorageAccountSubnetName'))]",
-    "DBSubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('AzureSQLServerSubnetName'))]",
-    "nicName": "NIC-01",
-    "azureSQLServerName": "[concat(parameters('deploymentPrefix'), '-ASQL')]",
-    "azureSQLServerPrivateEndpointName": "[concat(variables('azureSQLServerName'), '-PE-01')]",
-    "azureSQLDBName": "[toLower(concat(parameters('deploymentPrefix'), 'arcgisdb'))]",
+    "azureSQLMISubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('AzureSQLMISubnetName'))]",
+    "nicName": "[concat('NIC-',variables('baseSequenceNumberFormatted'))]",
+    "AzureSQLMIName": "[concat(parameters('deploymentPrefix'), '-ASQLMI-', variables('baseSequenceNumberFormatted'))]",
     "serverAvailablitySetName": "[concat(parameters('deploymentPrefix'), 'AvailabilitySet-Server')]",
     "serverVirtualMachineNames": "[split(parameters('serverVirtualMachineNames'),',')]",
     "numberOfServerVirtualMachines": "[length(variables('serverVirtualMachineNames'))]",
@@ -1044,8 +1100,10 @@
     "webAdaptorNicName": "[concat(parameters('WebAdaptorVirtualMachineName'),'-',variables('nicName'))]",
     "omsWorkspaceResourceId": "[if(and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName')))), resourceId(parameters('omsWorkspaceResourceGroupName'), 'Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName')),'')]",
     "storageAccountName": "[toLower(parameters('StorageAccountName'))]",
-    "storageAccountPrivateEndpointName": "[concat(variables('storageAccountName'), '-PE-01')]",
-    "nsgName": "[concat(parameters('deploymentPrefix'), '-NSG-01')]",
+    "storageAccountPrivateEndpointName": "[concat(variables('storageAccountName'), '-PE-', variables('baseSequenceNumberFormatted'))]",
+    "multiPurposeNSGName": "[concat(parameters('deploymentPrefix'), '-NSG-', variables('baseSequenceNumberFormatted'))]",
+    "azureSQLMINSGName": "[concat(parameters('deploymentPrefix'), '-NSG-', variables('baseSequenceNumberOffsettedFormatted'))]",
+    "azureSQLMIUDRName": "[concat(parameters('deploymentPrefix'), '-UDR-', variables('baseSequenceNumberFormatted'))]",
     "gisServerAvailabilitySetObject": {
       "id": "[if(less(length(string(parameters('GISServerVMAvailabilityZone'))),1),resourceId('Microsoft.Compute/availabilitySets',variables('serverAvailablitySetName')),json('null'))]"
     },
@@ -1063,9 +1121,9 @@
     },
     "userAssignedManagedIdentityName": "[concat(parameters('deploymentPrefix'), '-UAMI-GIS-01')]",
     "userAssignedManagedIdentityID": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedManagedIdentityName'))]",
-    "keyVaultName": "[concat(parameters('deploymentPrefix'), '-KEY-GIS-01')]",
-    "keyVaultPrivateEndpointName": "[concat(variables('keyVaultName'), '-PE-01')]",
-    "appGatewayName": "[concat(parameters('deploymentPrefix'), '-APPGW-GIS-01')]"
+    "keyVaultName": "[concat(parameters('deploymentPrefix'), '-KEY-GIS-', variables('baseSequenceNumberFormatted'))]",
+    "keyVaultPrivateEndpointName": "[concat(variables('keyVaultName'), '-PE-', variables('baseSequenceNumberFormatted'))]",
+    "appGatewayName": "[concat(parameters('deploymentPrefix'), '-APPGW-GIS-', variables('baseSequenceNumberFormatted'))]"
   },
   "resources": [
     {
@@ -2320,13 +2378,6 @@
             {
               "type": "Microsoft.Network/privateDnsZones",
               "apiVersion": "2020-06-01",
-              "name": "privatelink.database.windows.net",
-              "location": "global",
-              "properties": {}
-            },
-            {
-              "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2020-06-01",
               "name": "privatelink.file.core.windows.net",
               "location": "global",
               "properties": {}
@@ -2337,21 +2388,6 @@
               "name": "privatelink.vaultcore.azure.net",
               "location": "global",
               "properties": {}
-            },
-            {
-              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-              "apiVersion": "2020-06-01",
-              "name": "[concat('privatelink.database.windows.net', '/', parameters('existingVirtualNetworkName'), '-link')]",
-              "location": "global",
-              "dependsOn": [
-                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/privateDnsZones', 'privatelink.database.windows.net')]"
-              ],
-              "properties": {
-                "registrationEnabled": false,
-                "virtualNetwork": {
-                  "id": "[variables('vnetID')]"
-                }
-              }
             },
             {
               "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
@@ -2386,9 +2422,84 @@
             {
               "type": "Microsoft.Network/networkSecurityGroups",
               "apiVersion": "2021-05-01",
-              "name": "[variables('nsgName')]",
+              "name": "[variables('multiPurposeNSGName')]",
               "location": "[parameters('location')]",
               "properties": {
+              }
+            },
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2020-06-01",
+              "name": "[variables('azureSQLMINSGName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "allow_tds_inbound",
+                    "properties": {
+                      "description": "Allow access to data",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "1433",
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 1000,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "allow_redirect_inbound",
+                    "properties": {
+                      "description": "Allow inbound redirect traffic to Managed Instance inside the virtual network",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "11000-11999",
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 1100,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "deny_all_inbound",
+                    "properties": {
+                      "description": "Deny all other inbound traffic",
+                      "protocol": "*",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "*",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Deny",
+                      "priority": 4096,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "deny_all_outbound",
+                    "properties": {
+                      "description": "Deny all other outbound traffic",
+                      "protocol": "*",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "*",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Deny",
+                      "priority": 4096,
+                      "direction": "Outbound"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/routeTables",
+              "apiVersion": "2020-06-01",
+              "name": "[variables('azureSQLMIUDRName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "disableBgpRoutePropagation": false
               }
             },
             {
@@ -2396,12 +2507,12 @@
               "apiVersion": "2021-05-01",
               "name": "[concat(parameters('existingVirtualNetworkName'), '/', parameters('WebAdaptorSubnetName'))]",
               "dependsOn": [
-                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('multiPurposeNSGName'))]"
               ],
               "properties": {
                 "addressPrefix": "[reference(resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('WebAdaptorSubnetName')),'2021-05-01', 'Full').properties.addressPrefix]",
                 "networkSecurityGroup": {
-                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('multiPurposeNSGName'))]"
                 }
               }
             },
@@ -2415,7 +2526,7 @@
               "properties": {
                 "addressPrefix": "[reference(resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('JumpBoxSubnetName')),'2021-05-01', 'Full').properties.addressPrefix]",
                 "networkSecurityGroup": {
-                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('multiPurposeNSGName'))]"
                 }
               }
             },
@@ -2429,7 +2540,7 @@
               "properties": {
                 "addressPrefix": "[reference(resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('GISSubnetName')),'2021-05-01', 'Full').properties.addressPrefix]",
                 "networkSecurityGroup": {
-                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('multiPurposeNSGName'))]"
                 }
               }
             },
@@ -2443,22 +2554,35 @@
               "properties": {
                 "addressPrefix": "[reference(resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('StorageAccountSubnetName')),'2021-05-01', 'Full').properties.addressPrefix]",
                 "networkSecurityGroup": {
-                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('multiPurposeNSGName'))]"
                 }
               }
             },
             {
               "type": "Microsoft.Network/virtualNetworks/subnets",
               "apiVersion": "2021-05-01",
-              "name": "[concat(parameters('existingVirtualNetworkName'), '/', parameters('AzureSQLServerSubnetName'))]",
+              "name": "[concat(parameters('existingVirtualNetworkName'), '/', parameters('AzureSQLMISubnetName'))]",
               "dependsOn": [
-                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('StorageAccountSubnetName'))]"
+                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('StorageAccountSubnetName'))]",
+                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('azureSQLMINSGName'))]",
+                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/routeTables', variables('azureSQLMIUDRName'))]"
               ],
               "properties": {
-                "addressPrefix": "[reference(resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('AzureSQLServerSubnetName')),'2021-05-01', 'Full').properties.addressPrefix]",
+                "addressPrefix": "[reference(resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('AzureSQLMISubnetName')),'2021-05-01', 'Full').properties.addressPrefix]",
                 "networkSecurityGroup": {
-                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
-                }
+                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('azureSQLMINSGName'))]"
+                },
+                "routeTable": {
+                  "id": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/routeTables', variables('azureSQLMIUDRName'))]"
+                },
+                "delegations": [
+                  {
+                    "name": "managedInstanceDelegation",
+                    "properties": {
+                      "serviceName": "Microsoft.Sql/managedInstances"
+                    }
+                  }
+                ]
               }
             }
           ]
@@ -2638,7 +2762,7 @@
       },
       "properties": {
         "subnet": {
-          "id": "[variables('DBSubnetRef')]"
+          "id": "[variables('storageAccountSubnetRef')]"
         },
         "privateLinkServiceConnections": [
           {
@@ -2757,96 +2881,40 @@
       }
     },
     {
-      "type": "Microsoft.Sql/servers",
-      "apiVersion": "2021-08-01-preview",
-      "name": "[variables('azureSQLServerName')]",
+      "type": "Microsoft.Sql/managedInstances",
+      "apiVersion": "2020-02-02-preview",
+      "name": "[variables('AzureSQLMIName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
+        "[concat('privateDNSNSGNestedDeployment-',deployment().name)]"
       ],
       "tags": {
-        "displayName": "Azure SQL Server for DB"
+        "displayName": "Azure SQL Managed Instance"
+      },
+      "sku": {
+        "name": "[parameters('AzureSQLMISKUName')]"
+      },
+      "identity": {
+        "type": "SystemAssigned"
       },
       "properties": {
-        "administratorLogin": "[parameters('AzureSQLServerAdministratorName')]",
-        "administratorLoginPassword": "[parameters('AzureSQLServerAdministratorPassword')]",
+        "administratorLogin": "[parameters('AzureSQLMIAdministratorName')]",
+        "administratorLoginPassword": "[parameters('AzureSQLMIAdministratorPassword')]",
         "administrators": {
           "administratorType": "ActiveDirectory",
           "azureADOnlyAuthentication": false,
-          "principalType": "[parameters('AzureSQLAADAdministratorType')]",
-          "login": "[parameters('AzureSQLAADAdministratorLoginName')]",
-          "sid": "[parameters('AzureSQLAADAdministratorObjectID')]",
+          "login": "[parameters('AzureSQLMIAADAdministratorLoginName')]",
+          "principalType": "[parameters('AzureSQLMIAADAdministratorType')]",
+          "sid": "[parameters('AzureSQLMIAADAdministratorObjectID')]",
           "tenantId": "[tenant().tenantId]"
         },
         "minimalTlsVersion": "1.2",
-        "publicNetworkAccess": "Disabled",
-        "restrictOutboundNetworkAccess": "Disabled"
-      }
-    },
-    {
-      "type": "Microsoft.Sql/servers/databases",
-      "apiVersion": "2021-08-01-preview",
-      "name": "[concat(variables('azureSQLServerName'), '/', variables('azureSQLDBName'))]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Sql/servers',variables('azureSQLServerName'))]"
-      ],
-      "tags": {
-        "displayName": "Azure SQL DB"
-      },
-      "sku": {
-        "capacity": 10,
-        "name": "Standard",
-        "tier": "Standard"
-      },
-      "kind": "v12.0,user",
-      "properties": {}
-    },
-    {
-      "type": "Microsoft.Network/privateEndpoints",
-      "apiVersion": "2020-06-01",
-      "name": "[variables('azureSQLServerPrivateEndpointName')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId(subscription().subscriptionId, resourceGroup().name,'Microsoft.Sql/servers/databases', variables('azureSQLServerName'), variables('azureSQLDBName'))]",
-        "[concat('privateDNSNSGNestedDeployment-',deployment().name)]"
-      ],
-      "tags": {
-        "displayName": "Private Endpoint for Azure SQL Server"
-      },
-      "properties": {
-        "subnet": {
-          "id": "[variables('DBSubnetRef')]"
-        },
-        "privateLinkServiceConnections": [
-          {
-            "name": "[variables('azureSQLServerPrivateEndpointName')]",
-            "properties": {
-              "privateLinkServiceId": "[resourceId('Microsoft.Sql/servers',variables('azureSQLServerName'))]",
-              "groupIds": [
-                "sqlServer"
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
-      "apiVersion": "2020-11-01",
-      "name": "[concat(variables('azureSQLServerPrivateEndpointName'), '/default')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/privateEndpoints', variables('azureSQLServerPrivateEndpointName'))]",
-        "[concat('privateDNSNSGNestedDeployment-',deployment().name)]"
-      ],
-      "properties": {
-        "privateDnsZoneConfigs": [
-          {
-            "name": "privatelink_database_windows_net",
-            "properties": {
-              "privateDnsZoneId": "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/privateDnsZones', 'privatelink.database.windows.net')]"
-            }
-          }
-        ]
+        "publicDataEndpointEnabled": false,
+        "subnetId": "[variables('azureSQLMISubnetRef')]",
+        "storageSizeInGB": "[parameters('AzureSQLMIStorageSize')]",
+        "vCores": "[parameters('AzureSQLMIvCores')]",
+        "licenseType": "[parameters('AzureSQLMILicenseType')]",
+        "zoneRedundant": "[if(greaterOrEquals(length(pickZones('Microsoft.Sql','managedInstances',resourcegroup().location)),1),bool('true'),bool('false'))]"
       }
     },
     {
