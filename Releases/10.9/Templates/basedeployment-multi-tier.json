@@ -1127,7 +1127,7 @@
   },
   "resources": [
     {
-      "apiVersion": "2014-04-01-preview",
+      "apiVersion": "2021-04-01",
       "name": "[concat('pid-',parameters('deploymentTrackingID'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
@@ -1156,7 +1156,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('jumpBoxNicName')]",
       "location": "[parameters('location')]",
-      "apiVersion": "[variables('networkApiVersion')]",
+      "apiVersion": "2020-11-01",
       "tags": {
         "displayName": "RDP Jump Box Network Interface",
         "arcgis-deployment-id": "[variables('deploymentId')]"
@@ -1180,7 +1180,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('JumpBoxVirtualMachineName')]",
       "location": "[parameters('location')]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "tags": {
         "displayName": "RDP Jump Box",
         "arcgis-deployment-id": "[variables('deploymentId')]",
@@ -1257,7 +1257,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('webAdaptorNicName')]",
       "location": "[parameters('location')]",
-      "apiVersion": "[variables('networkApiVersion')]",
+      "apiVersion": "2020-11-01",
       "tags": {
         "displayName": "Web Adaptor VM Network Interface",
         "arcgis-deployment-id": "[variables('deploymentId')]"
@@ -1281,7 +1281,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('WebAdaptorVirtualMachineName')]",
       "location": "[parameters('location')]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "tags": {
         "displayName": "Web Adaptor VM",
         "arcgis-deployment-id": "[variables('deploymentId')]",
@@ -1367,7 +1367,7 @@
     },
     {
       "condition": "[and(equals(string(parameters('enableRDPAccess')),'True'),equals(string(parameters('joinWindowsDomain')),'True'))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('JumpBoxVirtualMachineName'),'/JoinDomain')]",
       "location": "[parameters('location')]",
@@ -1412,7 +1412,7 @@
       }
     },
     {
-      "apiVersion": "[variables('networkApiVersion')]",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('serverVirtualMachineNames')[copyIndex()], '-', variables('nicName'))]",
       "location": "[parameters('location')]",
@@ -1442,7 +1442,7 @@
     },
     {
       "condition": "[not(empty(parameters('adminPassword')))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('serverVirtualMachineNames')[copyIndex()]]",
       "location": "[parameters('location')]",
@@ -1541,7 +1541,7 @@
     },
     {
       "condition": "[equals(string(parameters('joinWindowsDomain')), 'True')]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('serverVirtualMachineNames')[copyIndex()],'/JoinDomain',copyIndex())]",
       "location": "[parameters('location')]",
@@ -1590,7 +1590,7 @@
       }
     },
     {
-      "apiVersion": "[variables('networkApiVersion')]",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('portalVirtualMachineNames')[copyIndex()], '-', variables('nicName'))]",
       "location": "[parameters('location')]",
@@ -1620,7 +1620,7 @@
     },
     {
       "condition": "[not(empty(parameters('adminPassword')))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('portalVirtualMachineNames')[copyIndex()]]",
       "location": "[parameters('location')]",
@@ -1719,7 +1719,7 @@
     },
     {
       "condition": "[equals(string(parameters('joinWindowsDomain')), 'True')]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('portalVirtualMachineNames')[copyIndex()],'/JoinDomain',copyIndex())]",
       "location": "[parameters('location')]",
@@ -1768,7 +1768,7 @@
       }
     },
     {
-      "apiVersion": "[variables('networkApiVersion')]",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('dataStoreVirtualMachineNames')[copyIndex()], '-', variables('nicName'))]",
       "location": "[parameters('location')]",
@@ -1798,7 +1798,7 @@
     },
     {
       "condition": "[not(empty(parameters('adminPassword')))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('dataStoreVirtualMachineNames')[copyIndex()]]",
       "location": "[parameters('location')]",
@@ -1897,7 +1897,7 @@
     },
     {
       "condition": "[equals(string(parameters('joinWindowsDomain')), 'True')]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('dataStoreVirtualMachineNames')[copyIndex()],'/JoinDomain',copyIndex())]",
       "location": "[parameters('location')]",
@@ -1931,7 +1931,7 @@
       "condition": "[or(not(parameters('usesExistingPublicIP')),and(equals(string(parameters('usesPrivateIP')), 'True'),equals(string(parameters('deployPublicIPWhenUsingPrivateIP')), 'True')))]",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[if(parameters('usesPrivateIP'),variables('unusedPublicIPWhenUsingPrivateIPResourceName'),variables('publicIPAddressResourceName'))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2020-11-01",
       "location": "[parameters('location')]",
       "tags": {
         "displayName": "Application Gateway Public IP Address",
@@ -2593,7 +2593,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName'))))]",
       "name": "[concat(parameters('JumpBoxVirtualMachineName'),'/LogAnalytics')]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2021-11-01",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', parameters('JumpBoxVirtualMachineName'))]"
@@ -2615,7 +2615,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName'))))]",
       "name": "[concat(parameters('WebAdaptorVirtualMachineName'),'/LogAnalytics')]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2021-11-01",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', parameters('WebAdaptorVirtualMachineName'))]"
@@ -2637,7 +2637,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName'))))]",
       "name": "[concat(variables('serverVirtualMachineNames')[copyIndex()],'/LogAnalytics')]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2021-11-01",
       "location": "[parameters('location')]",
       "copy": {
         "name": "vm-copy",
@@ -2663,7 +2663,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName'))))]",
       "name": "[concat(variables('portalVirtualMachineNames')[copyIndex()],'/LogAnalytics')]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2021-11-01",
       "location": "[parameters('location')]",
       "copy": {
         "name": "vm-copy",
@@ -2689,7 +2689,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName'))))]",
       "name": "[concat(variables('dataStoreVirtualMachineNames')[copyIndex()],'/LogAnalytics')]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2021-11-01",
       "location": "[parameters('location')]",
       "copy": {
         "name": "vm-copy",
@@ -2713,7 +2713,7 @@
     },
     {
       "type": "Microsoft.KeyVault/vaults",
-      "apiVersion": "2021-11-01-preview",
+      "apiVersion": "2021-10-01",
       "name": "[variables('keyVaultName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
@@ -2937,7 +2937,7 @@
     },
     {
       "condition": "[equals(string(variables('enableTileCacheDataStore')),'True')]",
-      "apiVersion": "[variables('networkApiVersion')]",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('tileCacheDataStoreVirtualMachineNameOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()], '-', variables('nicName'))]",
       "location": "[parameters('location')]",
@@ -2967,7 +2967,7 @@
     },
     {
       "condition": "[and(not(empty(parameters('adminPassword'))), equals(string(variables('enableTileCacheDataStore')),'True'))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('tileCacheDataStoreVirtualMachineNameOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()]]",
       "location": "[parameters('location')]",
@@ -3066,7 +3066,7 @@
     },
     {
       "condition": "[and(equals(string(variables('enableTileCacheDataStore')),'True'), equals(string(parameters('joinWindowsDomain')), 'True'))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('tileCacheDataStoreVirtualMachineNameOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()],'/JoinDomain', copyIndex())]",
       "location": "[parameters('location')]",
@@ -3100,7 +3100,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName')))), variables('enableTileCacheDataStore'))]",
       "name": "[concat(variables('tileCacheDataStoreVirtualMachineNameOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()],'/LogAnalytics')]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2021-11-01",
       "location": "[parameters('location')]",
       "copy": {
         "name": "vm-copy",
@@ -3142,7 +3142,7 @@
     },
     {
       "condition": "[equals(string(variables('enableSpatiotemporalBigDataStore')),'True')]",
-      "apiVersion": "[variables('networkApiVersion')]",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('spatiotemporalBigDataStoreVirtualMachineNameOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()], '-', variables('nicName'))]",
       "location": "[parameters('location')]",
@@ -3172,7 +3172,7 @@
     },
     {
       "condition": "[and(not(empty(parameters('adminPassword'))), equals(string(variables('enableSpatiotemporalBigDataStore')),'True'))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('spatiotemporalBigDataStoreVirtualMachineNameOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()]]",
       "location": "[parameters('location')]",
@@ -3273,7 +3273,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "condition": "[and(and(not(empty(parameters('omsWorkspaceResourceGroupName'))),not(empty(parameters('omsWorkspaceName')))), variables('enableSpatiotemporalBigDataStore'))]",
       "name": "[concat(variables('spatiotemporalBigDataStoreVirtualMachineNameOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()],'/LogAnalytics')]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2021-11-01",
       "location": "[parameters('location')]",
       "copy": {
         "name": "vm-copy",
@@ -3297,7 +3297,7 @@
     },
     {
       "condition": "[and(equals(string(variables('enableSpatiotemporalBigDataStore')),'True'), equals(string(parameters('joinWindowsDomain')), 'True'))]",
-      "apiVersion": "[variables('computeApiVersion')]",
+      "apiVersion": "2021-11-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('spatiotemporalBigDataStoreVirtualMachineNameOptions')[string(variables('enableSpatiotemporalBigDataStore'))][copyIndex()],'/JoinDomain', copyIndex())]",
       "location": "[parameters('location')]",
