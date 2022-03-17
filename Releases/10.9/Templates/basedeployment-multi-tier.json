@@ -110,6 +110,7 @@
       "type": "int",
       "defaultValue": 8,
       "allowedValues": [
+        4,
         8,
         16,
         24,
@@ -954,6 +955,13 @@
         "description": "(Optional) Domain FQDN where the virtual machine will be joined. Required if joinWindowsDomain = true"
       },
       "defaultValue": ""
+    },
+    "DeployAzureSQLMI": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Indicates whether Azure SQL Managed Instance should be deployed"
+      }
     }
   },
   "variables": {
@@ -961,9 +969,7 @@
     "baseSequenceNumberFormatted": "[format('{0:00}', parameters('BaseSequenceNumber'))]",
     "baseSequenceNumberOffsetted": "[add(parameters('BaseSequenceNumber'), 1)]",
     "baseSequenceNumberOffsettedFormatted": "[format('{0:00}', variables('baseSequenceNumberOffsetted'))]",
-    "computeApiVersion": "2018-06-01",
-    "networkApiVersion": "2018-08-01",
-    "publicIPAddressResourceName": "[if(parameters('usesExistingPublicIP'), parameters('existingPublicIPName'), concat(parameters('deploymentPrefix'), 'PublicIP'))]",
+    "publicIPAddressResourceName": "[if(parameters('usesExistingPublicIP'), parameters('existingPublicIPName'), concat(parameters('deploymentPrefix'), '-PIP-GIS-', variables('baseSequenceNumberFormatted')))]",
     "publicIPAddressResourceGroupName": "[if(parameters('usesExistingPublicIP'), parameters('existingPublicIPResourceGroupName'), resourceGroup().name)]",
     "unusedPublicIPPWhenUsingPrivateIPDnsPrefix": "[concat('ip',variables('deploymentId'),parameters('serverContext'))]",
     "unusedPublicIPWhenUsingPrivateIPResourceName": "[concat(variables('unusedPublicIPPWhenUsingPrivateIPDnsPrefix'),'UnusedPublicIP')]",
@@ -1949,8 +1955,7 @@
           "domainNameLabel": "[if(parameters('usesPrivateIP'),variables('unusedPublicIPPWhenUsingPrivateIPDnsPrefix'),parameters('dnsPrefixForPublicIpAddress'))]"
         }
       },
-      "dependsOn": [
-      ]
+      "zones": "[if(greaterOrEquals(length(pickZones('Microsoft.Network', 'publicIPAddresses', parameters('location'),3)),2),pickZones('Microsoft.Network', 'publicIPAddresses', parameters('location'),3),createArray(''))]"
     },
     {
       "type": "Microsoft.Network/applicationGateways",
@@ -1961,6 +1966,9 @@
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedManagedIdentityName'))]",
         "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
       ],
+      "tags": {
+        "displayName": "App. Gateway for Web Adaptor."
+      },
       "identity": {
         "type": "UserAssigned",
         "userAssignedIdentities": {
@@ -2434,62 +2442,6 @@
               "location": "[parameters('location')]",
               "properties": {
                 "securityRules": [
-                  {
-                    "name": "allow_tds_inbound",
-                    "properties": {
-                      "description": "Allow access to data",
-                      "protocol": "Tcp",
-                      "sourcePortRange": "*",
-                      "destinationPortRange": "1433",
-                      "sourceAddressPrefix": "VirtualNetwork",
-                      "destinationAddressPrefix": "*",
-                      "access": "Allow",
-                      "priority": 1000,
-                      "direction": "Inbound"
-                    }
-                  },
-                  {
-                    "name": "allow_redirect_inbound",
-                    "properties": {
-                      "description": "Allow inbound redirect traffic to Managed Instance inside the virtual network",
-                      "protocol": "Tcp",
-                      "sourcePortRange": "*",
-                      "destinationPortRange": "11000-11999",
-                      "sourceAddressPrefix": "VirtualNetwork",
-                      "destinationAddressPrefix": "*",
-                      "access": "Allow",
-                      "priority": 1100,
-                      "direction": "Inbound"
-                    }
-                  },
-                  {
-                    "name": "deny_all_inbound",
-                    "properties": {
-                      "description": "Deny all other inbound traffic",
-                      "protocol": "*",
-                      "sourcePortRange": "*",
-                      "destinationPortRange": "*",
-                      "sourceAddressPrefix": "*",
-                      "destinationAddressPrefix": "*",
-                      "access": "Deny",
-                      "priority": 4096,
-                      "direction": "Inbound"
-                    }
-                  },
-                  {
-                    "name": "deny_all_outbound",
-                    "properties": {
-                      "description": "Deny all other outbound traffic",
-                      "protocol": "*",
-                      "sourcePortRange": "*",
-                      "destinationPortRange": "*",
-                      "sourceAddressPrefix": "*",
-                      "destinationAddressPrefix": "*",
-                      "access": "Deny",
-                      "priority": 4096,
-                      "direction": "Outbound"
-                    }
-                  }
                 ]
               }
             },
@@ -2498,8 +2450,14 @@
               "apiVersion": "2020-06-01",
               "name": "[variables('azureSQLMIUDRName')]",
               "location": "[parameters('location')]",
+              "dependsOn": [
+                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('azureSQLMINSGName'))]",
+                "[resourceId(subscription().subscriptionId, parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('multiPurposeNSGName'))]"
+              ],
               "properties": {
-                "disableBgpRoutePropagation": false
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                ]
               }
             },
             {
@@ -2816,11 +2774,25 @@
       }
     },
     {
+      "type": "Microsoft.Storage/storageAccounts/fileServices",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(variables('storageAccountName'), '/default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "properties": {
+        "shareDeleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        }
+      }
+    },
+    {
       "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
       "apiVersion": "2021-08-01",
       "name": "[concat(variables('storageAccountName'), '/default/', parameters('fileShareName'))]",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices', variables('storageAccountName'), 'default')]"
       ],
       "tags": {
         "displayName": "File Share"
@@ -2885,6 +2857,7 @@
       "apiVersion": "2020-02-02-preview",
       "name": "[variables('AzureSQLMIName')]",
       "location": "[parameters('location')]",
+      "condition": "[parameters('DeployAzureSQLMI')]",
       "dependsOn": [
         "[concat('privateDNSNSGNestedDeployment-',deployment().name)]"
       ],
@@ -3044,7 +3017,7 @@
       "location": "[parameters('location')]",
       "copy": {
         "name": "tileCacheAutoShutDownCopy",
-        "count": "[variables('numberOftileCacheDataStoreVirtualMachines')]"
+        "count": "[variables('numberOfTileCacheDataStoreVirtualMachines')]"
       },
       "dependsOn": [
         "[variables('tileCacheDataStoreVirtualMachineNameOptions')[string(variables('enableTileCacheDataStore'))][copyIndex()]]"
